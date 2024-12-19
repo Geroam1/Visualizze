@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize Login Page {% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+<form method="POST" action="/login">
+    <!-- username input -->
+    <div>
+        <p>Username</p>
+        <input id="username" name="username" type="text" required>
+    </div>
+
+    <!-- password input -->
+    <div>
+        <p>Password</p>
+        <input id="password" name="password" type="password" required>
+    </div>
+
+    <!-- submit button -->
+    <div>
+        <button id="login-buttoon" type="submit">Login</button>
+    </div>
+</form>
+{% endblock %}

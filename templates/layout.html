@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Visualizze</title>
+
+    <!-- link to the css in static -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='visualize.css') }}?v={{ v }}">
+</head>
+<body>
+    <!-- header Section -->
+    <header>
+        <!-- Menu button, runs toggleMenu when clicked -->
+        <div class="menu-icon" onclick="toggleMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+
+        <!-- page title -->
+        <h1 class="title">Visualizze</h1>
+
+        <!-- navigation objects -->
+        <div>
+            {% if session.get('user_id') %}
+                <!-- if logged in, show the logout button -->
+                <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+            {% else %}
+                <!-- if not logged in, show the login and register buttons -->
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a href="{{ url_for('register') }}" class="btn">Register</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Sliding menu, when menu button clicked -->
+    <div id="menu" class="menu">
+        <!-- menu content, using flask url_for to get route renders -->
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('services') }}">Services</a>
+    </div>
+
+
+    <!-- main content section, for template extensions -->
+    <main>
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+
+    <!-- footer section -->
+    <footer>
+        <p>&copy; Omar Mansour</p>
+    </footer>
+    
+    <!-- scripts -->
+    <!-- link to the js in static -->
+    <script src="{{ url_for('static', filename='visualize.js') }}"></script
+</body>
+</html>

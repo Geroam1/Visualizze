@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize Login Page {% endblock %}
+
+{% block content %}
+<h1>Register an Account</h1>
+<form method="POST" action="/register">
+    <!-- username input -->
+    <div>
+        <p>Username</p>
+        <input id="username" name="username" type="text" required>
+    </div>
+
+    <!-- email input -->
+    <div>
+        <p>Email</p>
+        <input id="email" name="email" type="email">
+    </div>
+
+    <!-- password input -->
+    <div>
+        <p>Password</p>
+        <input id="password" name="password" type="password" required>
+    </div>
+
+    <!-- confirm password input -->
+    <div>
+        <p>Confirm Password</p>
+        <input id="confirm-password" name="confirm-password" type="password" required>
+    </div>
+
+    <!-- submit button -->
+    <div>
+        <button id="register-button" type="submit">Register</button>
+    </div>
+</form>
+{% endblock %}
