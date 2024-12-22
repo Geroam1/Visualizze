@@ -13,7 +13,6 @@ function toggleMenu() {
 
 // password confirmation functionality
 function checkRegisterPasswords(event) {
-
     // get passwords inputted upon registration
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
@@ -34,9 +33,11 @@ function checkRegisterPasswords(event) {
     }
 }
 
+
 /* 
     event listeners 
 */
 
 // registeration password check on submit button click
 document.getElementById('register-button').addEventListener('click', checkRegisterPasswords);
+

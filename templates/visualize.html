@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize {% endblock %}
+
+{% block content %}
+<h1>Upload an Excel or CSV file</h1>
+<!-- upload box -->
+<div id="dropbox">
+    Drop a File Here, or Click to Browse
+
+    <!-- browse files button -->
+    <button type="button" id="browseButton">Browse Files</button>
+</div>
+
+<!-- file upload form -->
+<!-- enctype="multipart/form-data" is the browsers encoding type for files -->
+<form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" id="fileInput" name="file" style="display: none;" accept=".csv,.xlsx" />
+    <button type="submit" id="uploadButton">Upload</button>
+</form>
+{% endblock %}
