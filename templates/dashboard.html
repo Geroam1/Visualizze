@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize Home {% endblock %}
+
+{% block content %}
+
+<h1>Dashboard</h1>
+<div class="dashboard">
+    
+    <div class="dashboard-section">
+        <!-- section title-->
+        <div class="dashboard-section-title">
+            <h2>Data</h2>
+        </div>
+
+        <!-- html table of data uploaded -->
+        <div class="scrollable-container">
+            {{ table_html|safe }}
+        </div>
+
+        <!-- drop down selectors for column selection -->
+        <div class="dashboard-section-dropdown">
+            <label for="columnx">column x</label>
+            <select id="columnx">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <br><br>
+            <label for="columny">column y</label>
+            <select id="columny">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <label for="columnz">column z</label>
+            <select id="columnz">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="dashboard-section">
+        <!-- section title-->
+        <div class="dashboard-section-title">
+            <h2>Visual</h2>
+        </div>
+        <div class="dashboard-main-visual">
+            <img src="data:image/png;base64,{{ visual }}" alt="Data Visual"/>
+        </div>
+    </div>
+    <div class="dashboard-section">
+         <!-- section title-->
+         <div class="dashboard-section-title">
+            <h2>Data Report</h2>
+        </div>
+
+        <!-- data report section -->
+        <div class="dashboard-data-report">
+            <div class="scrollable-container">
+                Column Names: {{ col_names }}<br>
+                Column Data Types: {{ data_types }}<br>
+                Column Number: {{ col_num }}<br>
+                Row Number: {{ row_num }}<br>
+                File Name: {{ file_name }}<br>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-section">
+        <!-- section title-->
+        <div class="dashboard-section-title">
+            <h2>Other Visuals</h2>
+        </div>
+        <div class="dashboard-section-visual-select">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+            <img src="{{url_for('static', filename='graph.png')}}">
+        </div>
+    </div>
+</div>
+
+{% endblock %}

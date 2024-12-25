@@ -3,6 +3,7 @@
 
     /* color variables*/
     --button-hover-color: #0056b3;
+    --website-background-color:  #2c2c2c;
 }
 
 /* general styles */
@@ -14,22 +15,21 @@
 }
 
 .title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 24px;
-    margin: 0;
+}
+
+html {
+    height: 100%;
 }
 
 body {
-    background-color: #2c2c2c; 
+    background-color: var(--website-background-color); 
     color: white;
     line-height: 1.6;
     font-size: 16px;
 }
 
 header {
-
     /* header visuals */
     background-color: #1c1c1c;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -43,6 +43,14 @@ header {
     /* header sizing */
     width: 100%;
     height: 45px;
+}
+
+.left-header {
+    /* class for the div for the menu button and title in the header*/
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
 }
 
 
@@ -85,12 +93,16 @@ header {
 
     /* corner curviness */
     border-radius: 4px;
+
+    /* prevents button shrinking */
+    flex-shrink: 0;
 }
 
 /* change bg when hovering over a btn object */
 .btn:hover {
     background-color: var(--button-hover-color);
 }
+
 
 /* slding menu styling */
 #menu {
@@ -112,7 +124,7 @@ header {
 }
 
 #menu.open {
-    left: 0;  /* change left padding from -250 to 0, this mixed with transition creates a slide in effect */
+    left: 0;  /* change left padding from -200 to 0, this mixed with transition creates a slide in effect */
 }
 
 /* anchor links in the side bar styling */
@@ -168,7 +180,7 @@ button:hover {
 main {
     padding: 20px;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: auto;
     text-align: center;
 }
 
@@ -217,5 +229,11 @@ main {
 #browseButton:hover {
     background-color: var(--button-hover-color);
 }
+
+
+
+
+
+
 
 

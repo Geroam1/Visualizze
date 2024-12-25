@@ -6,8 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Visualizze</title>
 
-    <!-- link to the css in static -->
+    <!-- links to the css files in static -->
     <link rel="stylesheet" href="{{ url_for('static', filename='visualize.css') }}?v={{ v }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}?v={{ v }}">
 
     <!-- page icon -->
     <link rel="icon" href="{{ url_for('static', filename='v-icon.ico') }}" type="image/x-icon"> 
@@ -15,15 +16,17 @@
 <body>
     <!-- header Section -->
     <header>
-        <!-- Menu button, runs toggleMenu when clicked -->
-        <div class="menu-icon" onclick="toggleMenu()">
-            <div class="line"></div>
-            <div class="line"></div>
-            <div class="line"></div>
-        </div>
+        <div class="left-header">
+            <!-- Menu button, runs toggleMenu when clicked -->
+            <div class="menu-icon" onclick="toggleMenu()">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
 
-        <!-- page title -->
-        <h1 class="title">Visualizze</h1>
+            <!-- page title -->
+            <h1 class="title">Visualizze</h1>
+        </div>
 
         <!-- navigation objects -->
         <div>
@@ -61,7 +64,7 @@
     </footer>
     
     <!-- scripts -->
-    <!-- link to the js in static -->
+    <!-- links to the js files in static -->
     <script src="{{ url_for('static', filename='visualize.js') }}"></script>
     <script src="{{ url_for('static', filename='drag-and-drop.js') }}"></script>
 </body>
