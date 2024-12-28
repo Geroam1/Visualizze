@@ -19,27 +19,34 @@
         </div>
 
         <!-- drop down selectors for column selection -->
-        <div class="dashboard-section-dropdown">
-            <label for="columnx">column x</label>
-            <select id="columnx">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-            </select>
-            <br><br>
-            <label for="columny">column y</label>
-            <select id="columny">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-            </select>
-            <label for="columnz">column z</label>
-            <select id="columnz">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-            </select>
-        </div>
+        <form action="/dashboard" method="POST">
+            <div class="dashboard-section-dropdown">
+                <label for="columnx">Column X</label>
+                <select id="columnx" name="columnx">
+                    <option value="" disabled selected>col_x</option>
+                    {% for col in col_names %}
+                        <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <label for="columny">Column Y</label>
+                <select id="columny" name="columny">
+                    <option value="" disabled selected>col_y</option>
+                    {% for col in col_names %}
+                        <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <label for="columnz">Column Z</label>
+                <select id="columnz" name="columnz">
+                    <option value="" disabled selected>col_z</option>
+                    {% for col in col_names %}
+                        <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Visualize</button>
+        </form>
     </div>
     
     <div class="dashboard-section">
@@ -48,9 +55,14 @@
             <h2>Visual</h2>
         </div>
         <div class="dashboard-main-visual">
-            <img src="data:image/png;base64,{{ visual }}" alt="Data Visual"/>
+            {% if visual %}
+                <img src="data:image/png;base64,{{ visual }}" alt="No visual recommended"/>
+            {% else %}
+                <p>No visual generated yet</p>
+            {% endif %}
         </div>
     </div>
+
     <div class="dashboard-section">
          <!-- section title-->
          <div class="dashboard-section-title">

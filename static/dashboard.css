@@ -14,9 +14,6 @@
     gap: 20px;
     height: 150vh;
     width: 98vw;
-   
-
-
 }
 
 /* different layout for smaller screens like phones */
@@ -43,11 +40,13 @@
     /* content positioning*/
     display: flex;
     justify-content: left;
-    align-items: left;
+    align-items: flex-start;
     flex-direction: column;
+    padding: 10px;
 
-    /* div color */
+    /* section styling */
     background-color: var(--website-background-color);
+    box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.2);
 
 
      /* content wont leak out */
@@ -156,9 +155,13 @@
     height: 100%;
 }
 
+.dashboard-main-visual img {
+    max-width: 100%;  /* Image will scale down to fit the container's width */
+    height: auto;    /* Maintains aspect ratio */
+    display: block;  /* Ensures no extra space below the image */
+    margin: 0 auto;  /* Optional: Centers the image within the container */
+}
 .dashboard-main-visual {
-    
-    height: 100%;
-    width: 100%;
-    left: 0;
+    max-width: 600px;  /* Set a fixed maximum width for the container if needed */
+    margin: 0 auto;    /* Centers the container itself on the page */
 }

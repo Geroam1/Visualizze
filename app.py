@@ -8,7 +8,11 @@ import base64
 from io import BytesIO
 import pandas as pd
 import uuid
+import matplotlib
+# prevents GUI output from matlab, since it causes errors and isnt needed
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from functions import generate_and_recommend_visuals
 
 app = Flask(__name__)
 app.secret_key = 'secret_key_here_once_i_understand_it'
@@ -130,7 +134,7 @@ def upload():
     # redirect to dashboard
     return redirect(url_for('dashboard'))
 
-@app.route('/dashboard', methods=['GET'])
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
 
     # ensure file was uploaded
@@ -149,27 +153,41 @@ def dashboard():
     else:
         return "Unsupported file format", 400
 
-    # create visual, assuming numerical for now
-    fig, ax = plt.subplots()
-    data.sum(numeric_only=True).plot(kind='bar', ax=ax)
-    ax.set_title("Data Overview")
-    ax.set_xlabel("Columns")
-    ax.set_ylabel("Sum of Values")
+    # get columns
+    col_names = list(data.columns)
 
-    # save visual to the memory as bytes to be added to the session via encoding
-    img_stream = BytesIO()
-    fig.savefig(img_stream, format='png')
-    img_stream.seek(0)
+    # handle POST request (form submission)
+    x_col = y_col = z_col = None
+    if request.method == 'POST':
+        x_col = request.form.get('columnx')
+        y_col = request.form.get('columny')
 
-    # encode image to base64, complicated but it works
-    img_base64 = base64.b64encode(img_stream.read()).decode('utf-8')
-    session['visual'] = img_base64
+        if z_col:
+            z_col = request.form.get('columnz')
+
+        # You can now use x_col, y_col, and z_col as needed for your processing
+        print(f"Selected columns: X = {x_col} {type(x_col)}, Y = {y_col}, Z = {z_col}")
+    
+        # generate visuals and recommend one
+        visuals, recommended_visual_name = generate_and_recommend_visuals(
+            data, 
+            x_col=x_col, 
+            y_col=y_col
+        )
+        if recommended_visual_name:
+            recommended_visual = visuals[recommended_visual_name]
+
+            # converts the visual to base64, complicated but this simply allows the visual
+            # to be sent to the template as png image
+            img_stream = BytesIO()
+            recommended_visual.savefig(img_stream, format='png')
+            img_stream.seek(0)
+            img_base64 = base64.b64encode(img_stream.read()).decode('utf-8')
 
     # report data
     file_name = session['file_name']
     col_num = len(data.columns)
     row_num = len(data.index)
-    col_names = list(data.columns)
     data_types = list(data.dtypes)
 
     # convert data to html table for html table display
@@ -183,7 +201,7 @@ def dashboard():
         row_num=row_num,
         col_names=col_names,
         data_types=data_types,
-        visual=img_base64
+        visual=img_base64 if (request.method == 'POST' and recommended_visual_name) else None
     )
 
 
