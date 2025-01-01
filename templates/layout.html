@@ -6,12 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Visualizze</title>
 
-    <!-- links to the css files in static -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='visualize.css') }}?v={{ v }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}?v={{ v }}">
+    <!-- links to the css files in static (?v={{ v }} -> forced version update when css file updates, useful for development) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v={{ v }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/headerItems.css') }}?v={{ v }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidemenu.css') }}?v={{ v }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropbox.css') }}?v={{ v }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ v }}">
 
     <!-- page icon -->
-    <link rel="icon" href="{{ url_for('static', filename='v-icon.ico') }}" type="image/x-icon"> 
+    <link rel="icon" href="{{ url_for('static', filename='img/v-icon.ico') }}" type="image/x-icon"> 
 </head>
 <body>
     <!-- header Section -->
@@ -63,9 +66,9 @@
         <p>&copy; Omar Mansour</p>
     </footer>
     
-    <!-- scripts -->
-    <!-- links to the js files in static -->
-    <script src="{{ url_for('static', filename='visualize.js') }}"></script>
-    <script src="{{ url_for('static', filename='drag-and-drop.js') }}"></script>
+    <!-- script links to the js files in static -->
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/drag-and-drop.js') }}"></script>
 </body>
 </html>

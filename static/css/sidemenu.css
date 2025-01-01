@@ -1,0 +1,36 @@
+/* slding menu styling */
+#menu {
+    position: fixed;
+
+    /* overlaping priority */
+    z-index: 1;
+
+    /* sizing */
+    top: 45px; /* below the header */
+    left: -200px;  /* initially not visable hidden off-screen */
+    width: 200px;  /* width of menu box, should equal the absaloute value of left */
+    height: 100%; 
+
+    /* visuals and animations */
+    background-color: #333;
+    transition: left 0.3s ease-in-out;
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.2);
+}
+
+#menu.open {
+    left: 0;  /* change left padding from -200 to 0, this mixed with transition creates a slide in effect */
+}
+
+/* anchor links in the side bar styling */
+#menu a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+    margin: 2px;
+}
+
+/* hover bg change for side bar anchors */
+#menu a:hover {
+    background-color: var(--button-hover-color);
+}

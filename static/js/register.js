@@ -1,16 +1,3 @@
-/* 
-    functions
-*/
-
-// menu button functionality
-function toggleMenu() {
-    // get menu div from html
-    const menu = document.getElementById('menu');
-
-    // give the menu div the open class, toggle turns the class on and off when clicked again
-    menu.classList.toggle('open');
-}
-
 // password confirmation functionality
 function checkRegisterPasswords(event) {
     // get passwords inputted upon registration
@@ -33,11 +20,5 @@ function checkRegisterPasswords(event) {
     }
 }
 
-
-/* 
-    event listeners 
-*/
-
 // registeration password check on submit button click
 document.getElementById('register-button').addEventListener('click', checkRegisterPasswords);
-

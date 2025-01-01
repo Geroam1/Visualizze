@@ -1,0 +1,53 @@
+.left-header {
+    /* class for the div for the menu button and title in the header*/
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
+}
+
+/* sidebar menu toggle button */
+.menu-icon {
+    
+    /* icon sizing */
+    width: 25px;
+    height: 20px;
+
+    /* hovering changes pointer */
+    cursor: pointer;
+
+    /* lines in icon positioning */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.line {
+    /* lines in icon styling (creates the menu buutton look) */
+    background-color: white;
+    height: 4px;
+    width: 100%;
+    border-radius: 2px;
+}
+/* change color of all line objects when hovering over the menu icon */
+.menu-icon:hover .line {
+    background-color: var(--button-hover-color);
+}
+
+/* anchor buttons styling (login and logout buttons) */
+.btn {
+    margin-left: 10px;
+    color: white;
+
+    /* sizing */
+    padding: 5px 10px;
+
+    /* corner curviness */
+    border-radius: 4px;
+
+    /* prevents button shrinking */
+    flex-shrink: 0;
+}
+/* change bg when hovering over a btn object */
+.btn:hover {
+    background-color: var(--button-hover-color);
+}

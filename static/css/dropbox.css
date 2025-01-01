@@ -1,0 +1,45 @@
+#dropbox {
+
+    /* sizing and visuals*/
+    width: 50vw;
+    height: 50vh;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    display: flex;
+
+    /* item positioning */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    /* styling */
+    color: #666;
+    font-family: Arial, sans-serif;
+
+    /* element positioning */
+    position: relative;
+    margin: 20px auto;
+    z-index: 0;
+}
+
+#dropbox.dragover {
+    border-color: #00f;
+    background-color: #f0f8ff;
+}
+
+#browseButton {
+    background-color: gray;
+    color: white;
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+#browseButton:hover {
+    background-color: var(--button-hover-color);
+}
