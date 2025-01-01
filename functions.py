@@ -1,9 +1,11 @@
 import pandas as pd
 import matplotlib
+from datetime import datetime, timedelta
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sqlalchemy.sql import text
 
 def generate_and_recommend_visuals(dataset, x_col, y_col, z_col=None):
     """
@@ -98,3 +100,6 @@ def generate_and_recommend_visuals(dataset, x_col, y_col, z_col=None):
         recommended = recommended or "count_plot"
 
     return visuals, recommended
+
+
+

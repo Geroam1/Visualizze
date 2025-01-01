@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 from database import Database
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-import time
 import os
 import base64
 from io import BytesIO
@@ -14,10 +13,14 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from functions import generate_and_recommend_visuals
 
-app = Flask(__name__)
-app.secret_key = 'secret_key_here_once_i_understand_it'
 
-# website data base
+# app setup
+app = Flask(__name__)
+
+# secret key for security
+app.config['SECRET_KEY'] = 'd9e850b0a5aea4034945ffe3e897c88583ec644577a717be7df58706176529b5518aa6'
+
+# visualizze data base
 db = Database("visualizze.db")
 
 # folder to hold file uploads
@@ -26,8 +29,9 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # folder path
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-@app.route("/")
 
+
+@app.route("/")
 def layout():
         return render_template("layout.html")
 
@@ -73,6 +77,7 @@ def login():
         # check user existance
         if user:
             # store user_id in session if user authenticated
+            session.permanent = True # set session to permanent
             session['user_id'] = user['id']
             return redirect('/home')
 
@@ -159,10 +164,12 @@ def dashboard():
     # handle POST request (form submission)
     x_col = y_col = z_col = None
     if request.method == 'POST':
-        x_col = request.form.get('columnx')
-        y_col = request.form.get('columny')
-
-        if z_col:
+        # check selected columns
+        if request.form.get('columnx'):
+            x_col = request.form.get('columnx')
+        if request.form.get('columny'):
+            y_col = request.form.get('columny')
+        if request.form.get('columnz'):
             z_col = request.form.get('columnz')
 
         # You can now use x_col, y_col, and z_col as needed for your processing
