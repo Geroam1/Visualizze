@@ -2,3 +2,5 @@
 __pycache__/
 **/datasets/
 **/other/
+**/function_WIPs/
+configs/TODO.txt

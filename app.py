@@ -11,7 +11,7 @@ import matplotlib
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from functions import generate_and_recommend_visuals
+from functions import generate_and_recommend_visuals, process_data
 
 
 # app setup
@@ -141,6 +141,7 @@ def upload():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
+    print('dashin')
 
     # ensure file was uploaded
     file_path = session.get('uploaded_file_path')
@@ -157,6 +158,9 @@ def dashboard():
         data = pd.read_csv(file_path)
     else:
         return "Unsupported file format", 400
+    
+    # process data
+    data = process_data(data)
 
     # get columns
     col_names = list(data.columns)
@@ -176,6 +180,7 @@ def dashboard():
         print(f"Selected columns: X = {x_col} {type(x_col)}, Y = {y_col}, Z = {z_col}")
     
         # generate visuals and recommend one
+        
         visuals, recommended_visual_name = generate_and_recommend_visuals(
             data, 
             x_col=x_col, 

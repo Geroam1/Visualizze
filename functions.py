@@ -1,11 +1,36 @@
 import pandas as pd
 import matplotlib
-from datetime import datetime, timedelta
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sqlalchemy.sql import text
+
+def process_data(df):
+    """
+    applies the new method from pandas which is very usefull for data processing, 
+    documentation:
+
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.convert_dtypes.html
+
+    this method is still experimental so it is not the most accurate.
+
+    Args:
+    df -> DataFrame: the data set to be processed
+
+    Returns:
+    df -> DataFrame: the processed data frame
+    """
+
+    # new convenient pandas method
+    df = df.convert_dtypes()
+
+    # remove leading spaces from string columns
+    for column in df.columns:
+        if df[column].dtype == 'string':
+            df[column] = df[column].str.strip()
+
+    return df
+
 
 def generate_and_recommend_visuals(dataset, x_col, y_col, z_col=None):
     """

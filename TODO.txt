@@ -1,0 +1,11 @@
+Next steps for now:
+
+- Reconstruct the visualisation function
+
+- write a function to generate meaningfull reports
+
+- work on the other visuals section
+
+- finish creating proper sessions
+
+- think of a way to clear out uploads data over time, or start adding files to database
