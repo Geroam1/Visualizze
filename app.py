@@ -3,6 +3,7 @@ from database import Database
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 import os
+import io
 import base64
 from io import BytesIO
 import pandas as pd
@@ -11,7 +12,7 @@ import matplotlib
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from functions import generate_and_recommend_visuals, process_data
+from functions import generate_and_recommend_visuals, process_data, get_data_report_data
 
 
 # app setup
@@ -162,19 +163,22 @@ def dashboard():
     # process data
     data = process_data(data)
 
-    # get columns
-    col_names = list(data.columns)
-
     # handle POST request (form submission)
     x_col = y_col = z_col = None
     if request.method == 'POST':
         # check selected columns
         if request.form.get('columnx'):
             x_col = request.form.get('columnx')
+        else:
+            x_col = None
         if request.form.get('columny'):
             y_col = request.form.get('columny')
+        else:
+            y_col = None
         if request.form.get('columnz'):
             z_col = request.form.get('columnz')
+        else:
+            z_col = None
 
         # You can now use x_col, y_col, and z_col as needed for your processing
         print(f"Selected columns: X = {x_col} {type(x_col)}, Y = {y_col}, Z = {z_col}")
@@ -184,7 +188,8 @@ def dashboard():
         visuals, recommended_visual_name = generate_and_recommend_visuals(
             data, 
             x_col=x_col, 
-            y_col=y_col
+            y_col=y_col,
+            z_col=z_col
         )
         if recommended_visual_name:
             recommended_visual = visuals[recommended_visual_name]
@@ -195,25 +200,40 @@ def dashboard():
             recommended_visual.savefig(img_stream, format='png')
             img_stream.seek(0)
             img_base64 = base64.b64encode(img_stream.read()).decode('utf-8')
+        if visuals:
+            # Encode visuals into Base64
+            encoded_visuals = []
+            for visual_name, fig in visuals.items():
+                buf = io.BytesIO()
+                fig.savefig(buf, format='png')
+                buf.seek(0)
+                encoded_visual = base64.b64encode(buf.getvalue()).decode('utf-8')
+                buf.close()
+                encoded_visuals.append(f"data:image/png;base64,{encoded_visual}")
 
     # report data
     file_name = session['file_name']
-    col_num = len(data.columns)
-    row_num = len(data.index)
-    data_types = list(data.dtypes)
+    data_report = get_data_report_data(data)
 
-    # convert data to html table for html table display
+    # convert data(s) to html table for html table display
     table_html = data.to_html(classes="html-table")
+    col_data_html = data_report['col data'].to_html(classes="html-table", index=False)
 
     return render_template(
+        # template to render
         'dashboard.html',
+
+        # html table data to send
         table_html=table_html,
+        col_data_html = col_data_html,
+
+        # general data to send
         file_name=file_name,
-        col_num=col_num,
-        row_num=row_num,
-        col_names=col_names,
-        data_types=data_types,
-        visual=img_base64 if (request.method == 'POST' and recommended_visual_name) else None
+        data_report = data_report,
+
+        # visual data to send
+        visual=img_base64 if (request.method == 'POST' and recommended_visual_name) else None,
+        encoded_visuals=encoded_visuals if (request.method == 'POST' and visuals) else None
     )
 
 

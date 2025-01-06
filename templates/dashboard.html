@@ -23,24 +23,24 @@
             <div class="dashboard-section-dropdown">
                 <label for="columnx">Column X</label>
                 <select id="columnx" name="columnx">
-                    <option value="" disabled selected>col_x</option>
-                    {% for col in col_names %}
+                    <option value="" selected>col_x</option>
+                    {% for col in data_report['col names'] %}
                         <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
                 <br><br>
                 <label for="columny">Column Y</label>
                 <select id="columny" name="columny">
-                    <option value="" disabled selected>col_y</option>
-                    {% for col in col_names %}
+                    <option value="" selected>col_y</option>
+                    {% for col in data_report['col names'] %}
                         <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
                 <br><br>
                 <label for="columnz">Column Z</label>
                 <select id="columnz" name="columnz">
-                    <option value="" disabled selected>col_z</option>
-                    {% for col in col_names %}
+                    <option value="" selected>col_z</option>
+                    {% for col in data_report['col names'] %}
                         <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
@@ -54,6 +54,8 @@
         <div class="dashboard-section-title">
             <h2>Visual</h2>
         </div>
+
+        <!-- main visual section -->
         <div class="dashboard-main-visual">
             {% if visual %}
                 <img src="data:image/png;base64,{{ visual }}" alt="No visual recommended"/>
@@ -72,30 +74,43 @@
         <!-- data report section -->
         <div class="dashboard-data-report">
             <div class="scrollable-container">
-                Column Names: {{ col_names }}<br>
+
+                <h3>File Name</h3>
+                {{ file_name }}<br><br>
+
+                <h3>File Data</h3>
+                <p>Column Num: {{data_report['col num']}}</p>
+                <p>row Num: {{data_report['row num']}}</p>
+                {{col_data_html|safe}}<br><br>
+                
+                <!-- Column Names: {{ col_names }}<br>
                 Column Data Types: {{ data_types }}<br>
                 Column Number: {{ col_num }}<br>
-                Row Number: {{ row_num }}<br>
-                File Name: {{ file_name }}<br>
+                Row Number: {{ row_num }}<br> -->
+                
             </div>
         </div>
     </div>
     <div class="dashboard-section">
-        <!-- section title-->
+
+        <!-- section title -->
         <div class="dashboard-section-title">
             <h2>Other Visuals</h2>
         </div>
+
+        <!-- other visuals select section -->
         <div class="dashboard-section-visual-select">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
-            <img src="{{url_for('static', filename='img/graph.png')}}">
+            {% if encoded_visuals %}
+                {% for altvisual in encoded_visuals %}
+                    <button class="visual-button" data-visual="{{ altvisual }}">
+                        <img src="{{ altvisual }}" alt="Visual">
+                    </button>
+                {% endfor %}
+            {% else %}
+                <p>No visuals generated yet</p>
+            {% endif %}
         </div>
+
     </div>
 </div>
 

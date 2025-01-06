@@ -1,8 +1,8 @@
 Next steps for now:
 
-- Reconstruct the visualisation function
+- Reconstruct the visualisation function (MAIN PROBLEM)
 
-- write a function to generate meaningfull reports
+- write a function to generate meaningfull reports 
 
 - work on the other visuals section
 

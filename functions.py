@@ -4,6 +4,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tabulate import tabulate
+import pandas as pd
 
 def process_data(df):
     """
@@ -32,99 +34,104 @@ def process_data(df):
     return df
 
 
+def get_data_report_data(data):
+    """
+    analyses the data set and outputs relevant information about the data set to be reported in the
+    dashboard
+
+    Args:
+    data -> DataFrame: the data set
+
+    Retruns:
+    data_report -> dictionary: a dictionary containing  relevant information about the data set
+    """
+    data_report = {}
+
+    # column names and data types
+    data_report['col names'], data_report['col types'] = list(data.columns), list(data.dtypes)
+    data_report['col data'] = pd.DataFrame({
+        'Column Name': data_report['col names'],
+        'Data Type': data_report['col types']
+    })
+    
+    # colum and row numbers
+    data_report['row num'], data_report['col num'] = data.shape
+    
+    return data_report
+
+
 def generate_and_recommend_visuals(dataset, x_col, y_col, z_col=None):
     """
-    Args
+    Args:
+        dataset (pandas.DataFrame): Dataset to visualize.
+        x_col, y_col, z_col (str): Columns to visualize.
 
-    dataset -> pandas dataframe: a data frame object of the dataset to be visualised
-    x_col, y_col, z_col -> pandas series: a column from the data set
-
-    Returns
-
-    visuals -> dictionary: a dictionary with keys as a visual names and values as the visual as a figure object
-    recommended -> string: the name of the key of the recommended visual in the visuals dictionary
+    Returns:
+        visuals (dict): A dictionary with visual names as keys and figure objects as values.
+        recommended (str): The recommended visual's key in the visuals dictionary.
     """
-
-    # check x_col and y_col is in the dataset
-    if x_col not in dataset.columns or y_col not in dataset.columns:
+    if x_col not in dataset.columns:
         raise ValueError("x_col and y_col must be valid column names in the dataset.")
-    
-    # if a z axis is desired check its in the data set
     if z_col and z_col not in dataset.columns:
         raise ValueError("z_col must be a valid column name in the dataset.")
-    
-    # get types
-    x_type = dataset[x_col].dtype
-    y_type = dataset[y_col].dtype
-    z_type = dataset[z_col].dtype if z_col else None # if z was desired
-    
-    # visual storing variables
-    visuals = {}  # empty dict to add plots too
-    recommended = None # recommended visual
 
-    # scatter plot, if both columns are numeric and no z
+    x_type, y_type, z_type = dataset[x_col].dtype, dataset[y_col].dtype if z_col else None, dataset[z_col].dtype if z_col else None
+    visuals, recommendations = {}, []
+
+    def create_visual(plot_type, plot_func, **kwargs):
+        """Helper to create and store visuals with a customized dark theme."""
+        # Custom dark theme settings
+        plt.style.use("dark_background")  # Base dark background style
+        plt.rcParams.update({
+            "axes.facecolor": "#2B2B2B",  # Dark gray for plot background
+            "axes.edgecolor": "#5A5A5A",  # Light gray for axis edges
+            "axes.labelcolor": "white",   # White labels for better readability
+            "grid.color": "#444444",      # Medium gray for grid lines
+            "xtick.color": "lightgray",   # Light gray for x-tick labels
+            "ytick.color": "lightgray",   # Light gray for y-tick labels
+            "figure.facecolor": "#1E1E1E",  # Deep gray for figure background
+            "text.color": "white",        # White for all text
+            "legend.frameon": True,       # Enable legend frame
+            "legend.facecolor": "#2E2E2E",  # Dark gray for legend background
+            "legend.edgecolor": "#5A5A5A",  # Light gray for legend border
+        })
+
+        # Create the plot
+        plt.figure(figsize=(10, 6))
+        plot_func(**kwargs)
+        plt.title(plot_type.replace("_", " ").title(), fontsize=14, color="white", pad=15)  # Title with spacing
+        visuals[plot_type] = plt.gcf()
+        recommendations.append(plot_type)
+        plt.close()
+
     if pd.api.types.is_numeric_dtype(x_type) and pd.api.types.is_numeric_dtype(y_type):
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(data=dataset, x=x_col, y=y_col)
-        plt.title("Scatter Plot")
-
-        # save visual (gcf -> get current plot)
-        visuals["scatter_plot"] = plt.gcf()
-        plt.close()
-        
-        # if z_col and z_col numeric add color encoding
+        create_visual("scatter_plot", sns.scatterplot, data=dataset, x=x_col, y=y_col)
         if z_col and pd.api.types.is_numeric_dtype(z_type):
-            plt.figure(figsize=(10, 6))
-            scatter = plt.scatter(dataset[x_col], dataset[y_col], c=dataset[z_col], cmap='viridis', alpha=0.7)
-            plt.colorbar(scatter, label=z_col)
-            plt.title("Scatter Plot with Color Encoding")
+            create_visual("scatter_with_color", plt.scatter, x=dataset[x_col], y=dataset[y_col], c=dataset[z_col], cmap='viridis', alpha=0.7)
 
-            # save visual as a figure object
-            visuals["scatter_with_color"] = plt.gcf()
-            plt.close()
-            recommended = "scatter_with_color"
-
-    # line Plot for: numerical type against datetime type
     if pd.api.types.is_datetime64_any_dtype(x_type):
-        plt.figure(figsize=(10, 6))
-        sns.lineplot(data=dataset, x=x_col, y=y_col)
-        plt.title("Time Series Line Plot")
+        create_visual("line_plot", sns.lineplot, data=dataset, x=x_col, y=y_col)
 
-        # save visual
-        visuals["line_plot"] = plt.gcf()
-        plt.close()
-
-        # assign recommended if it hasnt been assigned yet
-        recommended = recommended or "line_plot"
-
-    # bar plot
     if pd.api.types.is_categorical_dtype(x_type) or dataset[x_col].nunique() < 20:
-        plt.figure(figsize=(10, 6))
-        sns.barplot(data=dataset, x=x_col, y=y_col)
-        plt.title("Bar Plot")
-        visuals["bar_plot"] = plt.gcf()
-        plt.close()
-        recommended = recommended or "bar_plot"
+        create_visual("bar_plot", sns.barplot, data=dataset, x=x_col, y=y_col)
+        create_visual("box_plot", sns.boxplot, data=dataset, x=x_col, y=y_col)
 
-    # Box Plot
-    if pd.api.types.is_numeric_dtype(y_type) and (pd.api.types.is_categorical_dtype(x_type) or dataset[x_col].nunique() < 20):
-        plt.figure(figsize=(10, 6))
-        sns.boxplot(data=dataset, x=x_col, y=y_col)
-        plt.title("Box Plot")
-        visuals["box_plot"] = plt.gcf()
-        plt.close()
-        recommended = recommended or "box_plot"
-
-    # Count Plot
     if pd.api.types.is_categorical_dtype(x_type) and y_col is None:
-        plt.figure(figsize=(10, 6))
-        sns.countplot(data=dataset, x=x_col)
-        plt.title("Count Plot")
-        visuals["count_plot"] = plt.gcf()
-        plt.close()
-        recommended = recommended or "count_plot"
+        create_visual("count_plot", sns.countplot, data=dataset, x=x_col)
 
-    return visuals, recommended
+    if pd.api.types.is_numeric_dtype(x_type) and pd.api.types.is_numeric_dtype(y_type):
+        create_visual("heatmap", sns.heatmap, data=dataset[[x_col, y_col]].corr(), annot=True, cmap='coolwarm')
+
+    if pd.api.types.is_numeric_dtype(x_type):
+        create_visual("histogram", sns.histplot, data=dataset, x=x_col, kde=True)
+
+    if pd.api.types.is_numeric_dtype(x_type) and pd.api.types.is_numeric_dtype(y_type) and z_col:
+        create_visual("bubble_chart", plt.scatter, x=dataset[x_col], y=dataset[y_col], s=dataset[z_col] * 50, alpha=0.7)
+
+    if pd.api.types.is_categorical_dtype(x_type):
+        create_visual("tree_map", sns.barplot, data=dataset, x=x_col, y=y_col)  # Tree maps would need a custom implementation in matplotlib
+
+    return visuals, recommendations[0] if recommendations else None
 
 
 
