@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
 import pandas as pd
+from functools import wraps
+from flask import session, flash, redirect, url_for
+
 
 def process_data(df):
     """
@@ -134,4 +137,15 @@ def generate_and_recommend_visuals(dataset, x_col, y_col, z_col=None):
     return visuals, recommendations[0] if recommendations else None
 
 
+def login_required(f):
+    """
+    login required decorater for later use
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('You must be logged in to access this page.', 'error')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 

@@ -18,7 +18,7 @@ from functions import generate_and_recommend_visuals, process_data, get_data_rep
 # app setup
 app = Flask(__name__)
 
-# secret key for security
+# secret key for security, better to add to environment variables later
 app.config['SECRET_KEY'] = 'd9e850b0a5aea4034945ffe3e897c88583ec644577a717be7df58706176529b5518aa6'
 
 # visualizze data base
@@ -36,11 +36,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def layout():
         return render_template("layout.html")
 
+
 # tool to reset data base as I develop
 @app.route("/clear")
 def delete_database():
     db.clear_database()
     return render_template("layout.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 # register page
@@ -65,6 +67,7 @@ def register():
 
     return render_template("register.html")
 
+
 @app.route("/login", methods=["GET", "POST"])
 # register page
 def login():
@@ -75,10 +78,12 @@ def login():
 
         # Example: Check if the user exists and password is correct
         user = db.authenticate_user(username, password)
-        # check user existance
-        if user:
-            # store user_id in session if user authenticated
-            session.permanent = True # set session to permanent
+
+        # check user existance, and correct password
+        if user and check_password_hash(user['password_hash'], password):
+            # clear any existing session and store user_id in session if user authenticated
+            session.clear()
+            session.permanent = True # set session to permanent (keeps a user logged in until logout)
             session['user_id'] = user['id']
             return redirect('/home')
 
@@ -86,6 +91,7 @@ def login():
         flash('Invalid username or password', 'error')
 
     return render_template('login.html')
+
 
 @app.route("/logout")
 def logout():
@@ -95,18 +101,20 @@ def logout():
     # redirect to unlogged in home page
     return redirect(url_for('login'))
 
+
 @app.route("/visualize")
 def visualize():
     return render_template("visualize.html")
+
 
 # route to handle visualize file upload
 # its better to do this to handle future additions
 @app.route('/visualize', methods=['POST'])
 def upload():
-    # Get the uploaded file
+    # get the uploaded file from requests
     uploaded_file = request.files.get('file')
 
-    # Check if a file was uploaded
+    # check that a file was uploaded
     if not uploaded_file:
         return "No file selected.", 400
 
@@ -116,52 +124,68 @@ def upload():
     if not filename.endswith(('.csv', '.xlsx')):
         return "Invalid file format. Please upload a .csv or .xlsx file.", 400
     
-
-    # renames file to a secure and proper file name for windows
+    # renames file to a secure and proper file name for the OS
     filename = secure_filename(filename)
     session['file_name'] = filename
 
-    # get user_id for file naming, if logged in acutal user_id, if not randomly generated string code for id
-    # prevents data with same name overwritting
-    user_id = session.get('user_id') or str(uuid.uuid4())
-    filename_with_user_id = f"{user_id}_{filename}"
+    # get user_id, or generate an annoymous one, and add it to the session to access data later
+    user_id = session.get('user_id')
+    if not user_id:
+        user_id = str(uuid.uuid4())  # generate a unique ID for anonymous user
+        session['user_id_private'] = user_id  # store it in the session
 
-    # save file to upload folder
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename_with_user_id)
-    uploaded_file.save(filepath)
+    # get file size in bytes
+    file_size = len(uploaded_file.read())
+    uploaded_file.seek(0) # reset file pointer, so that later file reading does not output something empty
 
-    # defence against empty files
-    if os.path.getsize(filepath) == 0:
-        return "Error: The file is empty.", 400
+    # try to add data set to db
+    try:
+        # reads file as binary
+        data_set = uploaded_file.read()
 
-    # store file path in session for later use
-    session['uploaded_file_path'] = filepath
+        # upload file data to db
+        db.add_data_set(user_id, filename, 'csv' if filename.endswith('.csv') else 'xlsx', file_size, data_set)
+
+    except Exception as e:
+        return f"Error while saving to database: {str(e)}", 500
 
     # redirect to dashboard
     return redirect(url_for('dashboard'))
 
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    print('dashin')
 
     # ensure file was uploaded
-    file_path = session.get('uploaded_file_path')
-    if not file_path:
-        return "No file uploaded", 400
+    user_id = session.get('user_id') or session.get('user_id_private')
+    if not user_id:
+        return "No user ID found", 400
 
-    # get file extension
-    file_extension = os.path.splitext(file_path)[1]
+    # Fetch dataset from the database based on user_id (you should adjust this part based on your method)
+    try:
+        # read data entry in db
+        data_set_entry = db.get_data_set_by_user_id(user_id)
+        if not data_set_entry:
+            return "No file uploaded", 400
 
-    # read file depending on type
-    if file_extension == '.xlsx':
-        data = pd.read_excel(file_path)
-    elif file_extension == '.csv':
-        data = pd.read_csv(file_path)
-    else:
-        return "Unsupported file format", 400
-    
-    # process data
-    data = process_data(data)
+        # seperate db data
+        file_name = data_set_entry['file_name']
+        file_type = data_set_entry['file_type']
+        file_data = data_set_entry['data_set']
+
+        # read the binary data using pandas
+        if file_type == 'xlsx':
+            data = pd.read_excel(BytesIO(file_data))
+        elif file_type == 'csv':
+            data = pd.read_csv(BytesIO(file_data))
+        else:
+            return "Unsupported file format", 400
+        
+        # process the data to ready for visualization
+        data = process_data(data)
+
+    except Exception as e:
+        return f"Error while retrieving file from the database: {str(e)}", 500
 
     # handle POST request (form submission)
     x_col = y_col = z_col = None
@@ -184,7 +208,6 @@ def dashboard():
         print(f"Selected columns: X = {x_col} {type(x_col)}, Y = {y_col}, Z = {z_col}")
     
         # generate visuals and recommend one
-        
         visuals, recommended_visual_name = generate_and_recommend_visuals(
             data, 
             x_col=x_col, 
