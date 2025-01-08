@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 from database import Database
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 import os
 import io
 import base64
@@ -12,24 +13,19 @@ import matplotlib
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+# personal functions
 from functions import generate_and_recommend_visuals, process_data, get_data_report_data
 
 
 # app setup
 app = Flask(__name__)
 
-# secret key for security, better to add to environment variables later
-app.config['SECRET_KEY'] = 'd9e850b0a5aea4034945ffe3e897c88583ec644577a717be7df58706176529b5518aa6'
+# Get the VISUALIZZE_SECRET_KEY for .env file for secure sessions
+load_dotenv() # load variables from .env file
+app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
 # visualizze data base
 db = Database("visualizze.db")
-
-# folder to hold file uploads
-UPLOAD_FOLDER = 'uploads'
-# make folder directory if it doesnt exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# folder path
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @app.route("/")
