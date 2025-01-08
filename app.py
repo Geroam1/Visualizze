@@ -24,8 +24,8 @@ app = Flask(__name__)
 load_dotenv('./files_to_ignore/.env') # load variables from .env file
 app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
-# visualizze data base
-db = Database("visualizze.db")
+# initialize visualizze data base object
+db = Database("./DataBase/visualizze.db")
 
 
 @app.route("/")
