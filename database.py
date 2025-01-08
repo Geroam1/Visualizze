@@ -1,6 +1,7 @@
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
 class Database:
     def __init__(self, db_path):
         self.db_path = db_path
@@ -92,7 +93,7 @@ class Database:
     def get_data_set_by_user_id(self, user_id):
         try:
             # query to get data set of user_id
-            conn = sqlite3.connect('visualizze.db')
+            conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute('''
                 SELECT file_name, file_type, data_set
@@ -134,3 +135,16 @@ class Database:
             # reset data_set_id sequence
             cursor.execute("DELETE FROM sqlite_sequence WHERE name='data_sets'")
             conn.commit()
+
+    def clear_data_sets(self):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # deltes all rows in the data_sets table
+            cursor.execute("DELETE FROM data_sets")
+            # reset data_set_id sequence
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='data_sets'")
+            conn.commit()
+            print("data_sets data cleared")
+
+

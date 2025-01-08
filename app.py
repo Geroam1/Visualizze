@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 import io
 import base64
+import threading
 from io import BytesIO
 import pandas as pd
 import uuid
@@ -14,7 +15,11 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # personal functions
-from functions import generate_and_recommend_visuals, process_data, get_data_report_data, is_valid_email
+from functions import (
+    generate_and_recommend_visuals, 
+    process_data, 
+    get_data_report_data,
+    start_scheduler)
 
 
 # app setup
