@@ -1,6 +1,0 @@
-.gitignore
-__pycache__/
-**/datasets/
-**/other/
-**/function_WIPs/
-**/files_to_ignore/
