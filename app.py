@@ -14,13 +14,13 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # personal functions
-from functions import generate_and_recommend_visuals, process_data, get_data_report_data
+from functions import generate_and_recommend_visuals, process_data, get_data_report_data, is_valid_email
 
 
 # app setup
 app = Flask(__name__)
 
-# Get the VISUALIZZE_SECRET_KEY for .env file for secure sessions
+# get the VISUALIZZE_SECRET_KEY for .env file for secure sessions
 load_dotenv('./files_to_ignore/.env') # load variables from .env file
 app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
@@ -43,10 +43,17 @@ def delete_database():
 @app.route("/register", methods=["GET", "POST"])
 # register page
 def register():
+    error_message = None
     if request.method == "POST":
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
+        confirm_password = request.form.get("confirm-password")       
+
+        # check if password and confirm password are equal
+        if not (password == confirm_password):
+            error_message = "Passwords do not match"
+            return render_template("register.html", error_message=error_message)
 
         # hash password
         password_hash = generate_password_hash(password)
@@ -67,6 +74,8 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 # register page
 def login():
+    # login error message to pass to login.html
+    error_message = None
     if request.method == 'POST':
         # get username and password inputs
         username = request.form.get('username')
@@ -82,11 +91,11 @@ def login():
             session.permanent = True # set session to permanent (keeps a user logged in until logout)
             session['user_id'] = user['id']
             return redirect('/home')
+        else:
+            # if username or password incorrect do not login
+            error_message = "Invalid username or password."
 
-        # if user unauthenticated
-        flash('Invalid username or password', 'error')
-
-    return render_template('login.html')
+    return render_template('login.html', error_message=error_message)
 
 
 @app.route("/logout")

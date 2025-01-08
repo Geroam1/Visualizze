@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib
+import re
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -149,3 +150,18 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
+def is_valid_email(email):
+    """
+    checks if an email string is a correct format
+
+    Args:
+    email -> str: an email string
+
+    Returns:
+    True if match
+    False if no match
+    """
+    # regular expression to validate email
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return bool(re.match(email_regex, email))

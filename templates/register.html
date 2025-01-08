@@ -4,6 +4,9 @@
 
 {% block content %}
 <h1>Register an Account</h1>
+{% if error_message %}
+    <p style="color: red;">{{ error_message }}</p>
+{% endif %}
 <form method="POST" action="/register">
     <!-- username input -->
     <div>
@@ -13,7 +16,7 @@
 
     <!-- email input -->
     <div>
-        <p>Email</p>
+        <p>Email <span style="font-style: italic; color: gray;">(optional)</span></p>
         <input id="email" name="email" type="email">
     </div>
 
