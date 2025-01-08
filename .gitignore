@@ -1,7 +1,6 @@
 .gitignore
-configs/TODO.txt
 __pycache__/
 **/datasets/
 **/other/
 **/function_WIPs/
-.env
+**/files_to_ignore/

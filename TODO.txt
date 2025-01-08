@@ -1,9 +1,0 @@
-Next steps for now:
-
-- Reconstruct the visualisation function (MAIN PROBLEM)
-
-- add a feature to clear the database periodaclly
-
-- add detailed error handling, such as flash messages
-
-- add secret key to environment variables

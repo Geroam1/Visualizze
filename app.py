@@ -21,7 +21,7 @@ from functions import generate_and_recommend_visuals, process_data, get_data_rep
 app = Flask(__name__)
 
 # Get the VISUALIZZE_SECRET_KEY for .env file for secure sessions
-load_dotenv() # load variables from .env file
+load_dotenv('./files_to_ignore/.env') # load variables from .env file
 app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
 # visualizze data base
