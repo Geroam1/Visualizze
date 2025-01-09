@@ -21,6 +21,11 @@ from functions import (
     get_data_report_data,
     )
 from apscheduler.schedulers.background import BackgroundScheduler
+from functions import generate_and_recommend_WIP
+
+"""
+start up processes
+"""
 
 # app setup
 app = Flask(__name__)
@@ -39,6 +44,10 @@ hour, minute = 0, 0 # 24 hour clock, time when the database will be cleaned. 0,0
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=clean_data_base, trigger='cron', hour=hour, minute=minute)
 scheduler.start()
+
+"""
+routes
+"""
 
 @app.route("/")
 def layout():
@@ -232,11 +241,10 @@ def dashboard():
         print(f"Selected columns: X = {x_col} {type(x_col)}, Y = {y_col}, Z = {z_col}")
     
         # generate visuals and recommend one
-        visuals, recommended_visual_name = generate_and_recommend_visuals(
+        visuals, recommended_visual_name = generate_and_recommend_WIP(
             data, 
             x_col=x_col, 
             y_col=y_col,
-            z_col=z_col
         )
         if recommended_visual_name:
             recommended_visual = visuals[recommended_visual_name]
