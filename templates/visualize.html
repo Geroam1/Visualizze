@@ -4,6 +4,11 @@
 
 {% block content %}
 <h1>Upload an Excel or CSV file</h1>
+
+{% if error_message %}
+    <p style="color: red;">{{ error_message }}</p>
+{% endif %}
+
 <!-- upload box -->
 <div id="dropbox">
     Drop a File Here, or Click to Browse

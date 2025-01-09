@@ -19,8 +19,8 @@ from functions import (
     generate_and_recommend_visuals, 
     process_data, 
     get_data_report_data,
-    start_scheduler)
-
+    )
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # app setup
 app = Flask(__name__)
@@ -32,6 +32,13 @@ app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 # initialize visualizze data base object
 db = Database("./DataBase/visualizze.db")
 
+# start background process to clear data_set database periodically
+def clean_data_base():
+    db.clear_data_sets()
+hour, minute = 0, 0 # 24 hour clock, time when the database will be cleaned. 0,0 -> midnight
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=clean_data_base, trigger='cron', hour=hour, minute=minute)
+scheduler.start()
 
 @app.route("/")
 def layout():
@@ -126,7 +133,8 @@ def upload():
 
     # check that a file was uploaded
     if not uploaded_file:
-        return "No file selected.", 400
+        error_message = "File missing or removed from server. Please reupload the file."
+        return render_template('visualize.html', error_message=error_message)
 
     # get filename and ensure it is a csv or xlsx
     # additionally add it to the session for use later
@@ -147,6 +155,12 @@ def upload():
     # get file size in bytes
     file_size = len(uploaded_file.read())
     uploaded_file.seek(0) # reset file pointer, so that later file reading does not output something empty
+
+    # check file size
+    max_file_size = 100 * 2**20 # file_size is in Bytes, so 100 * 2**20 would represent 100 Megabytes
+    if file_size > max_file_size:
+        error_message = "File size to large, max file size: 100 MB"
+        return render_template('visualize.html', error_message=error_message)
 
     # try to add data set to db
     try:

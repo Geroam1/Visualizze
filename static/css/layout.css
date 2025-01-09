@@ -87,4 +87,6 @@ main {
 /* general classes */
 .title {
     font-size: 24px;
+    color: white;
+    font-family: 'Courier New', Courier, monospace !important;
 }

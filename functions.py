@@ -1,17 +1,11 @@
 import pandas as pd
 import matplotlib
-import threading
-import schedule
-import time
 from flask import Flask
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.daily import DailyTrigger
-from database import Database
 from functools import wraps
 from flask import session, flash, redirect, url_for
 
