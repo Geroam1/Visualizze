@@ -74,6 +74,15 @@
     width: 100%;
 }
 
+.main-visual {
+    width: 100%;
+    height: 100%;
+    display: block;
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* scrollable container for data table obtained from flask */
 .scrollable-container {
 
@@ -155,18 +164,6 @@
     width: 90%;
     height: 90%;
 }
-
-.dashboard-main-visual img {
-    max-width: 100%;  /* Image will scale down to fit the container's width */
-    height: auto;    /* Maintains aspect ratio */
-    display: block;  /* Ensures no extra space below the image */
-    margin: 0 auto;  /* Optional: Centers the image within the container */
-}
-.dashboard-main-visual {
-    max-width: 600px;  /* Set a fixed maximum width for the container if needed */
-    margin: 0 auto;    /* Centers the container itself on the page */
-}
-
 
 /* styling for the visuals acting as buttons in the other visuals section */
 .visual-button {

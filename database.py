@@ -79,18 +79,22 @@ class Database:
     def add_data_set(self, user_id, file_name, file_type, file_size, data_set):
         with self.get_connection() as conn:
             try:
-                # Add new dataset to data_sets table
-                conn.execute("""
+                # add new dataset to data_sets table
+                cursor = conn.cursor()
+                cursor.execute("""
                     INSERT INTO data_sets (user_id, file_name, file_type, file_size_bytes, uploaded_at, data_set)
                     VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
                 """, (user_id, file_name, file_type, file_size, data_set))
+
+                dataset_id = cursor.lastrowid
                 conn.commit()
+                return dataset_id
             except sqlite3.IntegrityError:
                 # Handle cases where the data might violate constraints (e.g., duplicate user_id or file_name)
                 print(f"Error: Failed to add the dataset for user ID {user_id} and file '{file_name}'.")
     
     
-    def get_data_set_by_user_id(self, user_id):
+    def get_data_set_by_id(self, dataset_id):
         try:
             # query to get data set of user_id
             conn = sqlite3.connect(self.db_path)
@@ -98,8 +102,8 @@ class Database:
             cursor.execute('''
                 SELECT file_name, file_type, data_set
                 FROM data_sets
-                WHERE user_id = ?
-            ''', (user_id,))
+                WHERE data_set_id = ?
+            ''', (dataset_id,))
             result = cursor.fetchone()
             conn.close()
 

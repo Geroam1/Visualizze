@@ -36,15 +36,10 @@
                         <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
-                <br><br>
-                <label for="columnz">Column Z</label>
-                <select id="columnz" name="columnz">
-                    <option value="" selected>col_z</option>
-                    {% for col in data_report['col names'] %}
-                        <option value="{{ col }}">{{ col }}</option>
-                    {% endfor %}
-                </select>
             </div>
+            {% if error_message %}
+                <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
             <button type="submit">Visualize</button>
         </form>
     </div>
@@ -56,9 +51,10 @@
         </div>
 
         <!-- main visual section -->
+        <!-- the class here is for js rather than css -->
         <div class="dashboard-main-visual">
             {% if visual %}
-                <img src="data:image/png;base64,{{ visual }}" alt="No visual recommended"/>
+                <img class="main-visual" src="data:image/png;base64,{{ visual }}" alt="No visual recommended"/>
             {% else %}
                 <p>No visual generated yet</p>
             {% endif %}

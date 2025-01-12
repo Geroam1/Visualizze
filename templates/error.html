@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize Home {% endblock %}
+
+{% block content %}
+
+<h1 class="error-title">Something went wrong.</h1>
+<p class="error-message">{{ error_message }}</p>
+<a href="{{ url_for('home')}}" class="error-link">Go back to home</a>
+
+{% endblock %}

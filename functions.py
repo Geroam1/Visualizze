@@ -315,13 +315,17 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
         """
         x_col or y_col is a string
         """
-
-        # Countplot (Seaborn)
+        # Pie chart
+        if x_col and is_string_column(x):
+            create_visual(f"Pie Chart of {x_col}", plt.pie, x=x.value_counts(), labels = x.value_counts().index, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'}, textprops={'color': 'gray'} )
+        if y_col and is_string_column(y):
+            create_visual(f"Count Plot of {y_col}", plt.pie, data=dataset, x=y_col)
+        # Countplot
         if x_col and is_string_column(x):
             create_visual(f"Count Plot of {x_col}", sns.countplot, data=dataset, x=x_col)
         if y_col and is_string_column(y):
             create_visual(f"Count Plot of {y_col}", sns.countplot, data=dataset, x=y_col)
-
+        
 
         """
         x_col or y_col is a float
@@ -370,9 +374,9 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             # scatter plot
             create_visual(f"Scatter plot of {x_col} against {y_col}", plot_func=plt.scatter, x=x, y=y)
             # line plot
-            create_visual(f"Line plot of {x_col} against {y_col}", plot_func=plt.plot, x=x, y=y)
+            create_visual(f"Line plot of {x_col} against {y_col}", plot_func=sns.lineplot, data=dataset, x=x, y=y)
             # bar plot
-            create_visual(f"Bar plot of {x_col} against {y_col}", plot_func=plt.bar, x=x, y=y)
+            create_visual(f"Bar plot of {x_col} against {y_col}", plot_func=sns.barplot, data=dataset, x=x, y=y)
 
         """
         x_col and y_col is float

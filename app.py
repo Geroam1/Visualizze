@@ -176,8 +176,9 @@ def upload():
         # reads file as binary
         data_set = uploaded_file.read()
 
-        # upload file data to db
-        db.add_data_set(user_id, filename, 'csv' if filename.endswith('.csv') else 'xlsx', file_size, data_set)
+        # upload file data to db and record dataset id in session
+        session['dataset_id'] = db.add_data_set(user_id, filename, 'csv' if filename.endswith('.csv') else 'xlsx', file_size, data_set)
+        
 
     except Exception as e:
         return f"Error while saving to database: {str(e)}", 500
@@ -194,10 +195,10 @@ def dashboard():
     if not user_id:
         return "No user ID found", 400
 
-    # Fetch dataset from the database based on user_id (you should adjust this part based on your method)
+    # get dataset from the database based on user_id
     try:
         # read data entry in db
-        data_set_entry = db.get_data_set_by_user_id(user_id)
+        data_set_entry = db.get_data_set_by_id(session['dataset_id'])
         if not data_set_entry:
             return "No file uploaded", 400
 
@@ -219,6 +220,14 @@ def dashboard():
 
     except Exception as e:
         return f"Error while retrieving file from the database: {str(e)}", 500
+    
+    # report data
+    file_name = session['file_name']
+    data_report = get_data_report_data(data)
+
+    # convert data(s) to html table for html table display
+    table_html = data.to_html(classes="html-table")
+    col_data_html = data_report['col data'].to_html(classes="html-table", index=False)
 
     # handle POST request (form submission)
     x_col = y_col = z_col = None
@@ -236,11 +245,17 @@ def dashboard():
             z_col = request.form.get('columnz')
         else:
             z_col = None
-
-        # You can now use x_col, y_col, and z_col as needed for your processing
-        print(f"Selected columns: X = {x_col} {type(x_col)}, Y = {y_col}, Z = {z_col}")
     
-        # generate visuals and recommend one
+        # check columns were selected
+        if x_col not in data.columns and y_col not in data.columns:
+            error_message = "Please select at least 1 column."
+            return render_template('dashboard.html', 
+                                   error_message=error_message, 
+                                   data_report=data_report, 
+                                   table_html=table_html, 
+                                   col_data_html=col_data_html)
+        
+        # generate visuals
         visuals, recommended_visual_name = generate_and_recommend_WIP(
             data, 
             x_col=x_col, 
@@ -265,14 +280,6 @@ def dashboard():
                 encoded_visual = base64.b64encode(buf.getvalue()).decode('utf-8')
                 buf.close()
                 encoded_visuals.append(f"data:image/png;base64,{encoded_visual}")
-
-    # report data
-    file_name = session['file_name']
-    data_report = get_data_report_data(data)
-
-    # convert data(s) to html table for html table display
-    table_html = data.to_html(classes="html-table")
-    col_data_html = data_report['col data'].to_html(classes="html-table", index=False)
 
     return render_template(
         # template to render
@@ -303,6 +310,10 @@ def about():
 @app.route("/services")
 def services():
     return render_template("service.html")
+
+@app.route("/error")
+def error():
+    return render_template("error.html")
 
 
 if __name__ == '__main__':
