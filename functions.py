@@ -317,9 +317,10 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
         """
         # Pie chart
         if x_col and is_string_column(x):
-            create_visual(f"Pie Chart of {x_col}", plt.pie, x=x.value_counts(), labels = x.value_counts().index, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'}, textprops={'color': 'gray'} )
+            create_visual(f"Pie Chart of {x_col}", plt.pie, x=x.value_counts(), labels = x.value_counts().index, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'}, textprops={'color': 'gray'})
         if y_col and is_string_column(y):
-            create_visual(f"Count Plot of {y_col}", plt.pie, data=dataset, x=y_col)
+            create_visual(f"Pie Chart of {y_col}", plt.pie, x=y.value_counts(), labels = y.value_counts().index, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'}, textprops={'color': 'gray'})
+        
         # Countplot
         if x_col and is_string_column(x):
             create_visual(f"Count Plot of {x_col}", sns.countplot, data=dataset, x=x_col)

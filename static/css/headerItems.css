@@ -27,6 +27,7 @@
     height: 4px;
     width: 100%;
     border-radius: 2px;
+    transition: background-color 0.3s ease;
 }
 /* change color of all line objects when hovering over the menu icon */
 .menu-icon:hover .line {
@@ -46,6 +47,9 @@
 
     /* prevents button shrinking */
     flex-shrink: 0;
+
+    /* smooth transition on color change */
+    transition: background-color 0.3s ease-in-out;
 }
 /* change bg when hovering over a btn object */
 .btn:hover {

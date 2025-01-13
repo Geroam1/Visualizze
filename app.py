@@ -75,6 +75,11 @@ def register():
         if not (password == confirm_password):
             error_message = "Passwords do not match"
             return render_template("register.html", error_message=error_message)
+        
+        # check if username already exists
+        if db.user_exists:
+            error_message = "Username already exists"
+            return render_template("register.html", error_message=error_message)
 
         # hash password
         password_hash = generate_password_hash(password)

@@ -1,6 +1,8 @@
 /* variables */
 :root {
 
+    font-family: 'Arial', Courier, monospace;
+
     /* color variables*/
     --button-hover-color: #0056b3;
     --website-background-color:  #2c2c2c;
@@ -8,7 +10,7 @@
 
 /* general styles */
 * {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Helvetica  N eue', Arial, 'Times New Roman', Times, serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -88,5 +90,12 @@ main {
 .title {
     font-size: 24px;
     color: white;
-    font-family: 'Courier New', Courier, monospace !important;
+    font-family: 'Helvetica Neue', Courier, monospace;
+}
+
+.main-title {
+    font-size: 24px;
+    color: white;
+    font-family: 'Helvetica', Courier, monospace;   
+    filter: drop-shadow(-2px 0px 2px gray);
 }

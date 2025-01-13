@@ -63,7 +63,22 @@ class Database:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             # returns user data if exists
-            return cursor.fetchone() 
+            return cursor.fetchone()
+
+    def user_exists(self, username):
+        """
+        Args:
+        username ->  str: the username to check their existance
+
+        Returns
+        returns True if user exists
+        returns False if user does not exist
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM users WHERE username = ? LIMIT 1", (username,))
+            # Check if a row is fetched
+            return cursor.fetchone() is not None 
 
     def authenticate_user(self, username, password):
         user = self.get_user(username)

@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidemenu.css') }}?v={{ v }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dropbox.css') }}?v={{ v }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ v }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/specialClasses.css') }}?v={{ v }}">
+
+    <!-- fonts -->
+    
 
     <!-- page icon -->
     <link rel="icon" href="{{ url_for('static', filename='img/v-icon.ico') }}" type="image/x-icon"> 
@@ -27,8 +31,8 @@
                 <div class="line"></div>
             </div>
 
-            <!-- page title -->
-            <a href="{{ url_for('home') }}"><h1 class="title">Visualizze</h1></a>
+            <!-- webpage title -->
+            <a class="main-title" href="{{ url_for('home') }}">Visualizze</a>
         </div>
 
         <!-- navigation objects -->
