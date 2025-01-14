@@ -1,0 +1,153 @@
+:root {
+
+    /* color variables*/
+    --button-hover-color: #0056b3;
+    --website-background-color:  #2c2c2c;
+}
+
+* {
+    font-family: Helvetica, Arial, Helvetica, sans-serif;
+}
+
+/* keyframe animations */
+/* Animation Keyframes */
+@keyframes HomepageAnimation {
+    /* 
+    at the start the postion is translated by 50px in the y direction 
+    and the opacity remains at 0
+    */
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+
+    /* 
+    at the end the postion is translated at its original y 
+    and the opacity becomes 1
+    */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /*
+    adding ease-out and a few seconds for animation time in the class definition
+    will create a smooth animation for the title
+    */
+}
+
+body {
+    margin: 0;
+
+    /* prevent horizontal scrolling */
+    overflow-x: hidden; 
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--website-background-color);
+}
+
+.black-container {
+
+    /* block positioning */
+    width: 100%;
+    max-width: 100vw;
+
+
+    /* content display */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* block appearence */
+    background-color: black;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+
+    padding: 100px;
+}
+
+
+.btn-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+
+    opacity: 0;
+    animation: HomepageAnimation 1.5s ease-out forwards;
+    animation-delay: 1s;
+}
+
+a {
+    /* removes underline from anchors */
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+}
+
+.btn {
+    margin-left: 10px;
+    color: white;
+
+    /* sizing */
+    padding: 5px 10px;
+
+    /* corner curviness */
+    border-radius: 4px;
+
+    /* prevents button shrinking */
+    flex-shrink: 0;
+
+    /* smooth transition on color change */
+    transition: background-color 0.3s ease-in-out;
+}
+
+button.btn {
+    margin-left: 10px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+
+    /* sizing */
+    padding: 5px 10px;
+
+    /* corner curviness */
+    border-radius: 4px;
+
+    /* prevents button shrinking */
+    flex-shrink: 0;
+
+    /* removes button default border */
+    border: none;
+
+    /* removes the default button background */
+    background: none;
+
+    /* smooth transition on color change */
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* change bg when hovering over a btn object */
+.btn:hover {
+    background-color: var(--button-hover-color);
+}
+
+.homepage-title {
+    font-size: 100px;
+    color: white;
+    filter: drop-shadow(-2px 0px 2px gray);
+    margin-bottom: 10px;
+    margin-top: 0;
+
+    /* applying the keyframe animation */
+    opacity: 0;
+    animation: HomepageAnimation 1.5s ease-out forwards;
+
+    /* default a position */
+    transform: translateY(0);
+}

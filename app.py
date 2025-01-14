@@ -51,13 +51,14 @@ routes
 
 @app.route("/")
 def layout():
-        return render_template("layout.html")
+        return redirect(url_for("home"))
 
 
 # tool to reset data base as I develop
 @app.route("/clear")
 def delete_database():
     db.clear_database()
+    session.clear()
     return render_template("layout.html")
 
 
@@ -77,7 +78,7 @@ def register():
             return render_template("register.html", error_message=error_message)
         
         # check if username already exists
-        if db.user_exists:
+        if db.user_exists(username):
             error_message = "Username already exists"
             return render_template("register.html", error_message=error_message)
 
@@ -161,10 +162,7 @@ def upload():
     session['file_name'] = filename
 
     # get user_id, or generate an annoymous one, and add it to the session to access data later
-    user_id = session.get('user_id')
-    if not user_id:
-        user_id = str(uuid.uuid4())  # generate a unique ID for anonymous user
-        session['user_id_private'] = user_id  # store it in the session
+    user_id = session.get('user_id') or session.get('user_id_private')
 
     # get file size in bytes
     file_size = len(uploaded_file.read())
@@ -304,9 +302,22 @@ def dashboard():
     )
 
 
+@app.route("/continue_without_account", methods=["POST"])
+def continue_without_account():
+    user_id_private = str(uuid.uuid4())
+    session['user_id_private'] = user_id_private
+    print('private session started')
+    return redirect(url_for("home"))
 @app.route("/home")
 def home():
-    return render_template("home.html")
+    # if user logged in, or is in an annoymous session
+    if session.get('user_id') or session.get('user_id_private'):
+        return render_template('home.html')
+    return redirect(url_for("homeXlog"))
+@app.route("/homeXlog")
+def homeXlog():
+    return render_template("homeXlog.html")
+
 
 @app.route("/about")
 def about():

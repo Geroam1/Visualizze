@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Visualizze</title>
+    <!-- stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepageXlog.css') }}?v={{ v }}">
+    <!-- page icon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/v-icon.ico') }}" type="image/x-icon"> 
+</head>
+
+<body>
+    <div class="black-container"> 
+        <!-- main title -->
+        <h1 class="homepage-title">Visualizze</h1>
+
+        <!-- navigation-->
+        <div class="btn-layout">
+            <a class="btn" href="{{ url_for('login') }}">Login</a>
+            <a class="btn" href="{{ url_for('register') }}">Register</a>
+        </div>
+        <div class="btn-layout">
+            <form method="POST" action="{{ url_for('continue_without_account') }}">
+                <button type="submit" class="btn">Continue without an account</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
