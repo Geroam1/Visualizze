@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize Services {% endblock %}
+
+{% block content %}
+<h1>Your Saved Data Sets</h1>
+    
+{% if message %}
+    <p>{{ message }}</p>
+{% else %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>File Type</th>
+                <th>File Size (bytes)</th>
+                <th>Saved At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data_set in saved_data_sets %}
+                <tr>
+                    <td>{{ data_set['file_name'] }}</td>
+                    <td>{{ data_set['file_type'] }}</td>
+                    <td>{{ data_set['file_size_bytes'] }}</td>
+                    <td>{{ data_set['saved_at'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

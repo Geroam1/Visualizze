@@ -7,12 +7,17 @@ class Database:
         self.db_path = db_path
         self.create_users_table()
         self.create_data_sets_table()
+        self.create_saved_data_sets_table()
+        self.create_users_data_sets_table()
 
     def get_connection(self):
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
         return conn
 
+    """
+    table initializations
+    """
     def create_users_table(self):
         with self.get_connection() as conn:
             conn.execute("""
@@ -37,6 +42,37 @@ class Database:
                 file_size_bytes INTEGER NOT NULL,
                 uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 data_set BLOB NOT NULL,
+                -- ON DELETE CASCADE, deletes all user_id entries in this table when user_id is removed from users
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            )
+            """)
+            conn.commit()
+    
+    def create_saved_data_sets_table(self):
+        with self.get_connection() as conn:
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS saved_data_sets (
+                saved_data_set_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                file_name TEXT NOT NULL,
+                file_type TEXT NOT NULL,
+                file_size_bytes INTEGER NOT NULL,
+                saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                -- ON DELETE CASCADE, deletes all user_id entries in this table when user_id is removed from users
+                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+            )
+            """)
+            conn.commit()
+
+    def create_users_data_sets_table(self):
+        with self.get_connection() as conn:
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS users_data_sets (
+                user_id INTEGER NOT NULL PRIMARY KEY,
+                max_server_storage_bytes INTEGER NOT NULL,
+                server_storage_bytes INTEGER NOT NULL,
+                data_set BLOB NOT NULL,
+                -- ON DELETE CASCADE, deletes all user_id entries in this table when user_id is removed from users
                 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
             )
             """)
@@ -111,32 +147,35 @@ class Database:
     
     def get_data_set_by_id(self, dataset_id):
         try:
-            # query to get data set of user_id
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT file_name, file_type, data_set
-                FROM data_sets
-                WHERE data_set_id = ?
-            ''', (dataset_id,))
-            result = cursor.fetchone()
-            conn.close()
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    SELECT file_name, file_type, data_set
+                    FROM data_sets
+                    WHERE data_set_id = ?
+                ''', (dataset_id,))
+                result = cursor.fetchone()
 
-            if result:
-                # return data as dictionary
-                return {
-                    'file_name': result[0],
-                    'file_type': result[1],
-                    'data_set': result[2]  # binary data of the dataset file
-                }
-            else:
-                # add error message here later
-                return None
+                if result:
+                    return {
+                        'file_name': result[0],
+                        'file_type': result[1],
+                        'data_set': result[2]  # binary data of the dataset file
+                    }
+                else:
+                    return None
 
         except Exception as e:
-            # Handle any potential errors (e.g., database connection issues)
             print(f"Error retrieving dataset: {str(e)}")
             return None
+        
+    """
+    saved_data_sets table functions
+    """ 
+
+    """
+    users_data_sets table functions
+    """ 
 
     """
     generic database helper functions

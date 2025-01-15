@@ -319,13 +319,25 @@ def homeXlog():
     return render_template("homeXlog.html")
 
 
+@app.route("/history")
+def history():
+    # Fetch saved data sets from the database
+    with db.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM saved_data_sets")
+        saved_data_sets = cursor.fetchall()
+
+    # Check if there are saved data sets, and pass data to the template
+    if saved_data_sets:
+        return render_template("history.html", saved_data_sets=saved_data_sets)
+    else:
+        return render_template("history.html", message="No data sets saved yet.")
+
+
 @app.route("/about")
 def about():
     return render_template("about.html")
 
-@app.route("/services")
-def services():
-    return render_template("service.html")
 
 @app.route("/error")
 def error():
