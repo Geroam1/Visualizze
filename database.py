@@ -7,7 +7,6 @@ class Database:
         self.db_path = db_path
         self.create_users_table()
         self.create_data_sets_table()
-        self.create_saved_data_sets_table()
         self.create_users_data_sets_table()
 
     def get_connection(self):
@@ -42,22 +41,7 @@ class Database:
                 file_size_bytes INTEGER NOT NULL,
                 uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 data_set BLOB NOT NULL,
-                -- ON DELETE CASCADE, deletes all user_id entries in this table when user_id is removed from users
-                FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-            )
-            """)
-            conn.commit()
-    
-    def create_saved_data_sets_table(self):
-        with self.get_connection() as conn:
-            conn.execute("""
-            CREATE TABLE IF NOT EXISTS saved_data_sets (
-                saved_data_set_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                file_name TEXT NOT NULL,
-                file_type TEXT NOT NULL,
-                file_size_bytes INTEGER NOT NULL,
-                saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                         
                 -- ON DELETE CASCADE, deletes all user_id entries in this table when user_id is removed from users
                 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
             )
@@ -69,9 +53,12 @@ class Database:
             conn.execute("""
             CREATE TABLE IF NOT EXISTS users_data_sets (
                 user_id INTEGER NOT NULL PRIMARY KEY,
-                max_server_storage_bytes INTEGER NOT NULL,
-                server_storage_bytes INTEGER NOT NULL,
                 data_set BLOB NOT NULL,
+                file_name TEXT NOT NULL,
+                server_storage_bytes INTEGER NOT NULL,
+                user_max_server_storage_bytes INTEGER NOT NULL,
+                saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                
                 -- ON DELETE CASCADE, deletes all user_id entries in this table when user_id is removed from users
                 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
             )

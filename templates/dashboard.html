@@ -3,13 +3,26 @@
 {% block title %} Visualize Home {% endblock %}
 
 {% block content %}
+
 <div class="dashboard">
-    
+
+    <!-- DATA SECTION -->
     <div class="dashboard-section">
         <!-- section title-->
         <div class="dashboard-section-title">
             <h2>Data</h2>
         </div>
+
+        {% if session.get('user_id') and session.get('show-save-request-form') %}
+        <div class="save-this-dataset">
+            <form method="POST" id="saveDatasetForm">
+                <p>Would you like to save this dataset to My Datasets?
+                    <button type="submit" name="save_dataset" value="yes" style="margin: 5px;">Yes</button>
+                    <button type="submit" name="save_dataset" value="no" style="margin: 5px;">No</button>
+                </p>
+            </form>
+        </div>
+        {% endif %} 
 
         <!-- html table of data uploaded -->
         <div class="scrollable-container">
@@ -17,7 +30,7 @@
         </div>
 
         <!-- drop down selectors for column selection -->
-        <form action="/dashboard" method="POST">
+        <form action="/dashboard" method="POST" class="column-select-form">
             <div class="dashboard-section-dropdown">
                 <label for="columnx">Column X</label>
                 <select id="columnx" name="columnx">
@@ -38,10 +51,11 @@
             {% if error_message %}
                 <p style="color: red;">{{ error_message }}</p>
             {% endif %}
-            <button type="submit">Visualize</button>
+            <button type="submit" name="visualize">Visualize</button>
         </form>
     </div>
     
+    <!-- MAIN VISUAL SECTION -->
     <div class="dashboard-section">
         <!-- section title-->
         <div class="dashboard-section-title">
@@ -59,6 +73,7 @@
         </div>
     </div>
 
+    <!-- DATA REPORT SECTION -->
     <div class="dashboard-section">
          <!-- section title-->
          <div class="dashboard-section-title">
@@ -85,6 +100,8 @@
             </div>
         </div>
     </div>
+
+    <!-- OTHER VISUALS SECTION -->
     <div class="dashboard-section">
 
         <!-- section title -->

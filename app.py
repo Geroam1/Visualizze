@@ -143,6 +143,11 @@ def visualize():
 # its better to do this to handle future additions
 @app.route('/visualize', methods=['POST'])
 def upload():
+
+    # if user is not logged in give an annoymous id
+    if not session.get('user_id'):
+        session['user_id_private'] = str(uuid.uuid4())
+
     # get the uploaded file from requests
     uploaded_file = request.files.get('file')
 
@@ -181,6 +186,9 @@ def upload():
 
         # upload file data to db and record dataset id in session
         session['dataset_id'] = db.add_data_set(user_id, filename, 'csv' if filename.endswith('.csv') else 'xlsx', file_size, data_set)
+
+        # show save request form when rendering
+        session['show-save-request-form'] = True
         
 
     except Exception as e:
@@ -192,11 +200,12 @@ def upload():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-
+    
     # ensure file was uploaded
     user_id = session.get('user_id') or session.get('user_id_private')
     if not user_id:
-        return "No user ID found", 400
+        error_message = "No user ID found"
+        return render_template('error.html', error_message = error_message)
 
     # get dataset from the database based on user_id
     try:
@@ -234,29 +243,41 @@ def dashboard():
 
     # handle POST request (form submission)
     x_col = y_col = z_col = None
+    
     if request.method == 'POST':
+
+        # Check for 'save_dataset' value
+        save_dataset = request.form.get('save_dataset')
+        print(f"Save Dataset: {save_dataset}")  # Debug print
+
+        if save_dataset == 'yes':
+            # stop showing form
+            session['show-save-request-form'] = False
+            # Logic to save dataset
+            print('Saving dataset to My Datasets...')
+        elif save_dataset == 'no':
+            # stop showing form
+            session['show-save-request-form'] = False
+            # Logic to not save
+            print('Not saving dataset to My Datasets...')
+
         # check selected columns
         if request.form.get('columnx'):
             x_col = request.form.get('columnx')
-        else:
-            x_col = None
         if request.form.get('columny'):
             y_col = request.form.get('columny')
-        else:
-            y_col = None
-        if request.form.get('columnz'):
-            z_col = request.form.get('columnz')
-        else:
-            z_col = None
+            print(y_col)
     
         # check columns were selected
         if x_col not in data.columns and y_col not in data.columns:
-            error_message = "Please select at least 1 column."
-            return render_template('dashboard.html', 
-                                   error_message=error_message, 
-                                   data_report=data_report, 
-                                   table_html=table_html, 
-                                   col_data_html=col_data_html)
+            if 'visualize' in request.form:
+                error_message = "Please select at least 1 column."
+                return render_template(
+                    'dashboard.html', 
+                    error_message=error_message, 
+                    data_report=data_report, 
+                    table_html=table_html, 
+                    col_data_html=col_data_html)
         
         # generate visuals
         visuals, recommended_visual_name = generate_and_recommend_WIP(
@@ -274,7 +295,7 @@ def dashboard():
             img_stream.seek(0)
             img_base64 = base64.b64encode(img_stream.read()).decode('utf-8')
         if visuals:
-            # Encode visuals into Base64
+            # encode visuals into base64
             encoded_visuals = []
             for visual_name, fig in visuals.items():
                 buf = io.BytesIO()

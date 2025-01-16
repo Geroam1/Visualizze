@@ -27,6 +27,15 @@ body {
     font-size: 16px;
 }
 
+/* main content styling */
+main {
+    padding: 45px;
+    max-width: 1200px;
+    margin: auto;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 header {
     /* header visuals */
     background-color: #1c1c1c;
@@ -75,15 +84,6 @@ button {
 }
 button:hover {
     background-color: var(--button-hover-color);
-}
-
-/* main content styling */
-main {
-    padding: 45px;
-    max-width: 1200px;
-    margin: auto;
-    margin-bottom: 20px;
-    text-align: center;
 }
 
 /* general classes */

@@ -185,10 +185,11 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
     """
     # at least x_col or y_col should be selected
     if x_col not in dataset.columns and y_col not in dataset.columns:
-        raise ValueError("x_col or y_col must be valid column names in the dataset.")
+        return None, None
 
-    x = dataset[x_col] if x_col else None
-    y = dataset[y_col] if y_col else None
+    print(x_col)
+    x = dataset[x_col] if x_col in dataset.columns else None
+    y = dataset[y_col] if y_col in dataset.columns else None
     visuals, recommendations = {}, []
 
     # helper sub functions
