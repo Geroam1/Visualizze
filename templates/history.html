@@ -8,25 +8,33 @@
 {% if message %}
     <p>{{ message }}</p>
 {% else %}
-    <table border="1">
+    <table class="html-table" border="1">
+
+        <!-- add table headers -->
         <thead>
             <tr>
-                <th>File Name</th>
-                <th>File Type</th>
-                <th>File Size (bytes)</th>
-                <th>Saved At</th>
+                {% for column in table_columns %}
+                    <th>{{ header_names[column] }}</th>
+                {% endfor %}
             </tr>
         </thead>
+
+        <!-- add table data from backend -->
         <tbody>
-            {% for data_set in saved_data_sets %}
+            {% for data_set in saved_data_set_rows %}
                 <tr>
-                    <td>{{ data_set['file_name'] }}</td>
-                    <td>{{ data_set['file_type'] }}</td>
-                    <td>{{ data_set['file_size_bytes'] }}</td>
-                    <td>{{ data_set['saved_at'] }}</td>
+                    {% for column in table_columns %}
+                        <td>{{ data_set[column] }}</td>
+                    {% endfor %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    <div style="
+        margin-top: 10px;
+        font-weight: bold;
+    ">
+        Server storage use: {{ total_storage_used }} bytes
+    </div>
 {% endif %}
 {% endblock %}

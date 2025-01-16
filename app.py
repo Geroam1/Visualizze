@@ -175,6 +175,10 @@ def upload():
 
     # check file size
     max_file_size = 100 * 2**20 # file_size is in Bytes, so 100 * 2**20 would represent 100 Megabytes
+
+    # add this to the session as the users max server storage size for later
+    # maybe a feature can be added to increase this in some.. Financial way 
+    session['user_max_server_storage'] = max_file_size
     if file_size > max_file_size:
         error_message = "File size to large, max file size: 100 MB"
         return render_template('visualize.html', error_message=error_message)
@@ -218,6 +222,7 @@ def dashboard():
         file_name = data_set_entry['file_name']
         file_type = data_set_entry['file_type']
         file_data = data_set_entry['data_set']
+        file_size = data_set_entry['file_size']
 
         # read the binary data using pandas
         if file_type == 'xlsx':
@@ -253,12 +258,17 @@ def dashboard():
         if save_dataset == 'yes':
             # stop showing form
             session['show-save-request-form'] = False
-            # Logic to save dataset
+            # save dataset to user_data_sets tab;e
             print('Saving dataset to My Datasets...')
+            db.save_user_data_set(user_id=session['user_id'], 
+                                  data_set=file_data, 
+                                  file_name=file_name, 
+                                  server_storage_bytes=file_size, 
+                                  user_max_server_storage_bytes=session['user_max_server_storage'])
+            print('Saved to My Datasets...')
         elif save_dataset == 'no':
             # stop showing form
             session['show-save-request-form'] = False
-            # Logic to not save
             print('Not saving dataset to My Datasets...')
 
         # check selected columns
@@ -342,17 +352,37 @@ def homeXlog():
 
 @app.route("/history")
 def history():
-    # Fetch saved data sets from the database
     with db.get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM saved_data_sets")
-        saved_data_sets = cursor.fetchall()
+        cursor.execute("SELECT * FROM users_data_sets WHERE user_id=?", (session['user_id'],))
+        
+        # table column names from db
+        table_columns = ['file_name', 'server_storage_bytes', 'saved_at']
+        
+        # Custom headers for the table
+        header_names = {
+            'file_name': 'File Name',
+            'server_storage_bytes': 'File Size (bytes)',
+            'saved_at': 'Saved At'
+        }
+        
+        # get all rows
+        saved_data_set_rows = cursor.fetchall()
 
-    # Check if there are saved data sets, and pass data to the template
-    if saved_data_sets:
-        return render_template("history.html", saved_data_sets=saved_data_sets)
+        # calculate sum of storage use
+        total_storage_used = sum(row['server_storage_bytes'] for row in saved_data_set_rows)
+
+    # if there are entries in the table pass it to the template, else pass an empty data table message
+    if saved_data_set_rows:
+        return render_template("history.html", 
+                               total_storage_used=total_storage_used, 
+                               saved_data_set_rows=saved_data_set_rows, 
+                               table_columns=table_columns, 
+                               header_names=header_names)
     else:
         return render_template("history.html", message="No data sets saved yet.")
+
+
 
 
 @app.route("/about")

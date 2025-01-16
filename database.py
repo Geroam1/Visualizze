@@ -52,7 +52,8 @@ class Database:
         with self.get_connection() as conn:
             conn.execute("""
             CREATE TABLE IF NOT EXISTS users_data_sets (
-                user_id INTEGER NOT NULL PRIMARY KEY,
+                saved_data_set_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id,
                 data_set BLOB NOT NULL,
                 file_name TEXT NOT NULL,
                 server_storage_bytes INTEGER NOT NULL,
@@ -131,13 +132,13 @@ class Database:
                 # Handle cases where the data might violate constraints (e.g., duplicate user_id or file_name)
                 print(f"Error: Failed to add the dataset for user ID {user_id} and file '{file_name}'.")
     
-    
+
     def get_data_set_by_id(self, dataset_id):
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
                 cursor.execute('''
-                    SELECT file_name, file_type, data_set
+                    SELECT file_name, file_type, data_set, file_size_bytes
                     FROM data_sets
                     WHERE data_set_id = ?
                 ''', (dataset_id,))
@@ -147,7 +148,8 @@ class Database:
                     return {
                         'file_name': result[0],
                         'file_type': result[1],
-                        'data_set': result[2]  # binary data of the dataset file
+                        'data_set': result[2],  # binary data of the dataset file
+                        'file_size': result [3]
                     }
                 else:
                     return None
@@ -155,31 +157,53 @@ class Database:
         except Exception as e:
             print(f"Error retrieving dataset: {str(e)}")
             return None
-        
-    """
-    saved_data_sets table functions
-    """ 
 
     """
     users_data_sets table functions
     """ 
+    def save_user_data_set(self, user_id, data_set, file_name, server_storage_bytes, user_max_server_storage_bytes):
+        with self.get_connection() as conn:
+            try:
+                # add new dataset to data_sets table
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO users_data_sets (user_id, data_set, file_name, server_storage_bytes, user_max_server_storage_bytes, saved_at)
+                    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """, (user_id, data_set, file_name, server_storage_bytes, user_max_server_storage_bytes))
+                conn.commit()
+
+            except sqlite3.IntegrityError:
+                # Handle cases where the data might violate constraints (e.g., duplicate user_id or file_name)
+                print(f"Error: Failed to save the dataset for user ID {user_id} and file '{file_name}'.")
 
     """
     generic database helper functions
     """
     def clear_database(self):
+        """
+        this method is used to clear the db as i develop
+        """
         with self.get_connection() as conn:
-            # deletes all rows in the users table
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM users")
-            # resets user ids
-            cursor.execute("DELETE FROM sqlite_sequence WHERE name='users'")
+            # get all table names
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = cursor.fetchall()
+            for table in tables:
+                table_name = table[0]
 
-            # deltes all rows in the data_sets table
-            cursor.execute("DELETE FROM data_sets")
-            # reset data_set_id sequence
-            cursor.execute("DELETE FROM sqlite_sequence WHERE name='data_sets'")
+                # skip internal table
+                if table_name == 'sqlite_sequence':
+                    continue
+                
+                # delete all rows from each table
+                cursor.execute(f"DELETE FROM {table_name}")
+                
+                # reset incrementer, so ids continue to start from 1
+                cursor.execute(f"UPDATE sqlite_sequence SET seq = 0 WHERE name = '{table_name}'")
+            
+            # commit changes
             conn.commit()
+            print("All tables and sequences cleared")
 
     def clear_data_sets(self):
         with self.get_connection() as conn:

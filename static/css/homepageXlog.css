@@ -130,9 +130,8 @@ this allows just the parent div (the banner) to be blurred and not the content
     margin-left: 10px;
     color: white;
 
-    /* change background color, and add opacity */
+    /* change background color */
     background-color: var(--website-background-color);
-    opacity: 0.5;
 
     /* sizing */
     padding: 5px 10px;
@@ -170,9 +169,8 @@ button.btn {
     /* removes button default border */
     border: none;
 
-    /* change background color, and add opacity */
+    /* change background color */
     background-color: var(--website-background-color);
-    opacity: 0.5;
 
     /* smooth transition on color change */
     transition: background-color 0.3s ease-in-out;
