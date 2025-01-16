@@ -15,9 +15,18 @@
     <a href="{{ url_for('visualize') }}" class="navgrid-item visualizer">
         <div class="navgrid-item-text">Visualizer</div>
     </a>
+
+    <!-- MUST BE LOGGED IN TO ACCESS -->
+    {% if session.get('user_id') %}
     <a href="{{ url_for('history')}}" class="navgrid-item save-history">
         <div class="navgrid-item-text">Saved Datasets History</div>
     </a>
+    {% else %}
+    <a href="{{ url_for('login')}}" class="navgrid-item save-history">
+        <div class="navgrid-item-text">Saved Datasets History</div>
+    </a>
+    {% endif %}
+    
     <a href="#link3" class="navgrid-item tutorial">
         <div class="navgrid-item-text">Tutorial</div>
     </a>

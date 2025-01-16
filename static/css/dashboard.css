@@ -18,6 +18,16 @@
     width: 98vw;
 }
 
+/* left slide in keyframe aniamtion */
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%); /* start off-screen to the left */
+    }
+    100% {
+        transform: translateX(0); /* end at the default position */
+    }
+}
+
 /* dashboard section box styles */
 .dashboard-section {
 
@@ -31,6 +41,7 @@
     /* section styling */
     background-color: var(--website-background-color);
     box-shadow: 0px 0px 6px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
 
 
      /* content wont leak out */

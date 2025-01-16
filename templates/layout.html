@@ -52,7 +52,13 @@
     <div id="menu" class="menu">
         <!-- menu content, using flask url_for to get route renders -->
         <a href="{{ url_for('visualize') }}">Visualizer</a>
+
+        {% if session.get('user_id') %}
         <a href="{{ url_for('history') }}">History</a>
+        {% else %}
+        <a href="{{ url_for('login') }}">History</a>
+        {% endif %}
+        
         <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('about') }}">About</a>
         
