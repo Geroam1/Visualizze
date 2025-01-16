@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dropbox.css') }}?v={{ v }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ v }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/specialClasses.css') }}?v={{ v }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v={{ v }}">
     <!-- fonts -->
     
 
@@ -51,7 +51,7 @@
     <!-- Sliding menu, when menu button clicked -->
     <div id="menu" class="menu">
         <!-- menu content, using flask url_for to get route renders -->
-        <a href="{{ url_for('visualize') }}">Visualize</a>
+        <a href="{{ url_for('visualize') }}">Visualizer</a>
         <a href="{{ url_for('history') }}">History</a>
         <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('about') }}">About</a>

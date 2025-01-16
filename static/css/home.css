@@ -1,0 +1,118 @@
+/* Styling for the title */
+.home-title {
+    margin-bottom: 20px;
+
+     /* adds a black line under the div, creating a nice split effect */
+    border-bottom: 2px solid #1c1c1c;
+    padding-bottom: 10px; /* spacing between content and line */
+}
+
+/* navigation grid container */
+.navgrid-container {
+    display: grid;
+    justify-items: center; /* center items within the grid */
+
+    /* two columns, any number of rows */
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 20px;
+    max-width: 1000px;
+
+    /* centers grid horizontally, dont know why just does */
+    margin: auto;
+}
+
+/* Individual grid items */
+.navgrid-item {
+    /* allows stacking */
+    position: relative;
+
+    /* proportional relationship between width and height, 1.5xwidth = height */
+    aspect-ratio: 1.5;
+
+    /* 90% width of parent */
+    width: 90%;
+    padding: 15px;
+
+    /* background */
+    background-color: #1c1c1c; /* background if image doesnt load */
+    background-size: cover; /* background img will cover the whole item */
+    background-position: center; /* center the image, so that it looks as expected */
+
+    /* bordering */
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* slight box shadow */
+
+    /* item styling */
+    text-decoration: none;
+    font-size: 1.2em; /* scale with parent for relative sizing */
+    font-weight: bold;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8); /* Stronger text shadow for better contrast */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.navgrid-item-text {
+    /* text  positioning */
+    position: absolute;
+
+    /* place item at the bottom left */
+    bottom: 20px;
+    left: 10px;
+
+    /* text  styling */
+    color: white;
+    font-size: 1em; /* scale with parent for relative sizing */
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8); /* text shadow to increase readability slightly */
+    z-index: 2; /* have the text appear above pseudo element shading */
+}
+
+/* shading at the bottom 20% of the navgrid item */
+/* ::before pseudo elements appear before the content */
+.navgrid-item::before {
+    content: ''; /* empty content, a prerequesitue for pseudo elements */
+
+    /* position the shading bottom left abbsaloutely */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    /* width of the container and 20% height from the bottom */
+    width: 100%;
+    height: 20%; /* Occupy the bottom 20% */
+
+    /* shading coloring */
+    background: rgba(0, 0, 0, 0.6); /* Dark shading */
+    border-radius: 0 0 15px 15px; /* curve the bottom corners like the original */
+    z-index: 1; /* put below the text div */
+}
+
+.navgrid-item:hover {
+
+    /* slightly increase size when hovering */
+    transform: scale(1.05); 
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.7); /* bigger shadow, shows depth */
+    cursor: pointer;
+}
+
+.navgrid-item:active {
+    /* as the button is being clicked */
+    /* grow larger */
+    transform: scale(1.1);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.9); /* even bigger shadow*/
+}
+
+/* background image for each button */
+.navgrid-item.visualizer {
+    background-image: url("../img/home_visualize_link_background.png");
+}
+
+.navgrid-item.save-history {
+    background-image: url("../img/home_history_link_background.png");
+}
+
+.navgrid-item.tutorial {
+    background-image: url("../img/home_tutorial_link_background.png");
+}
+
+.navgrid-item.about {
+    background-image: url("../img/home_about_link_background.png");
+}

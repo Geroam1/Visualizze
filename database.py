@@ -88,6 +88,17 @@ class Database:
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             # returns user data if exists
             return cursor.fetchone()
+        
+    def get_username(self, user_id):
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+                result = cursor.fetchone()
+                return result[0] if result else None
+        except Exception as e:
+            print(f"Error fetching user: {e}")
+            return None
 
     def user_exists(self, username):
         """

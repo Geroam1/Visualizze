@@ -343,7 +343,12 @@ def continue_without_account():
 def home():
     # if user logged in, or is in an annoymous session
     if session.get('user_id') or session.get('user_id_private'):
-        return render_template('home.html')
+        if session.get('user_id'):
+            username = str(db.get_username(session.get('user_id')))
+            print(username)
+        else:
+            username = ""
+        return render_template('home.html', username=username)
     return redirect(url_for("homeXlog"))
 @app.route("/homeXlog")
 def homeXlog():
@@ -380,7 +385,7 @@ def history():
                                table_columns=table_columns, 
                                header_names=header_names)
     else:
-        return render_template("history.html", message="No data sets saved yet.")
+        return render_template("history.html", message="No datasets saved yet.")
 
 
 
