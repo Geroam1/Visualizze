@@ -16,17 +16,11 @@
     gap: 20px;
     height: 150vh;
     width: 98vw;
+
+    /* disable horizontal scrolling */
+    overflow-x: hidden;
 }
 
-/* left slide in keyframe aniamtion */
-@keyframes slideInFromLeft {
-    0% {
-        transform: translateX(-100%); /* start off-screen to the left */
-    }
-    100% {
-        transform: translateX(0); /* end at the default position */
-    }
-}
 
 /* dashboard section box styles */
 .dashboard-section {
@@ -45,7 +39,7 @@
 
 
      /* content wont leak out */
-    overflow: hidden;
+    overflow: hidden ;
 }
 
 .dashboard-section-title {
@@ -147,46 +141,56 @@
 }
 
 /* dashboard section special styles */
+
+/* other visuals button grid */
 .dashboard-section-visual-select {
+
+    /* slight padding to avoid border collison when enlarging buttons */
+    padding-left: 1.5%;
+    padding-right: 1.5%;
+
+    /* 3col grid display */
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    overflow: auto;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-items: center; 
+    margin-top: 20px;
     max-height: 400px;
+    box-sizing: border-box;
 }
 
-.dashboard-section-visual-select img {
-    width: 90%;
-    height: 90%;
-}
-
-/* styling for the visuals acting as buttons in the other visuals section */
+/* visual button appearence */
 .visual-button {
-    border: none;
-    background: none;
-    padding: 0;
     cursor: pointer;
-    transition: transform 0.2s;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
 }
-
 .visual-button img {
-    max-width: 100%;
-    border: 2px solid transparent;
-    border-radius: 5px;
+
+    /* the img will become the whole container, essentially becoming the button */
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
 }
 
-/* style of selected visual option */
+/* active effect for visual button */
 .visual-button.active-visual img {
-    border-color: var(--button-hover-color);
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-    transform: scale(1.05); /* slightly enlarge when selected */
+
+    /* when image is selected apply this styling */
+    border: 3px solid #007bff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* slight shadow */
 }
 
-button.visual-button:hover {
-    background-color: var(--button-hover-color);
-    border-radius: 2px;
+/* hover effect for visual button */
+div.visual-button:hover {
+    transform: scale(1.05); /* small enlarging effect when hovering */
 }
 
+
+/* save request section style */
 .save-this-dataset {
     display: inline-block;
     background-color: #1c1c1c;
@@ -197,8 +201,109 @@ button.visual-button:hover {
     border-radius: 5px;
 }
 
+/* drop down column select styling */
 .column-select-form {
-    text-align: left; /* Align text and elements to the left */
-    margin: 0; /* Ensure there is no margin around the form */
-    padding: 0; /* Optional: Remove padding if it's not needed */
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* Section animations */
+
+/* keyframe aniamtions */
+@keyframes slideinLeft-leftcol {
+    0% {
+        transform: translateX(-100%); /* start off-screen to the left */
+    }
+    100% {
+        transform: translateX(0); /* end at the default position */
+    }
+}
+
+@keyframes slideinLeft-rightcol {
+    0% {
+        transform: translateX(100%); /* start off-screen to the left */
+    }
+    100% {
+        transform: translateX(0); /* end at the default position */
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0; /* start off-screen to the left */
+    }
+    100% {
+        opacity: 1l /* end at the default position */
+    }
+}
+
+@keyframes flashBorder {
+    0% {
+        border: 2px solid transparent; /* No border initially */
+    }
+    50% {
+        border: 2px solid red; /* Border appears */
+    }
+    100% {
+        border: 2px solid transparent; /* Border disappears */
+    }
+}
+
+@keyframes flashBorder2 {
+    0% {
+        border: 2px solid transparent; /* No border initially */
+        box-shadow: none; /* No shadow */
+    }
+    50% {
+        border: 2px solid #3498db; /* Blue border appears */
+        box-shadow: 0 0 10px rgba(52, 152, 219, 0.7); /* Soft glowing effect */
+    }
+    100% {
+        border: 2px solid transparent; /* Border disappears */
+        box-shadow: none; /* Remove shadow */
+    }
+}
+
+/* animation variables */
+:root {
+ --animation-duration: 0.5s;
+ --animation-easing: ease-out;
+}
+
+/* compound class selectors */
+.dashboard-section.d {
+
+    /* 1 second ainmation duration set to ease-out*/
+    animation: slideinLeft-leftcol var(--animation-duration) var(--animation-easing);
+    animation-delay: 0s; /* starts first */
+    animation-fill-mode: both; /* remains in final position */
+}
+
+.dashboard-section.v {
+    animation: slideinLeft-rightcol var(--animation-duration) var(--animation-easing);
+    animation-delay: 0.1s; /* starts third */
+    animation-fill-mode: both;
+}
+
+.dashboard-section.dr {
+    animation: slideinLeft-leftcol var(--animation-duration) var(--animation-easing);
+    animation-delay: 0.2s; /* starts second */
+    animation-fill-mode: both;
+}
+
+
+.dashboard-section.ov {
+    animation: slideinLeft-rightcol var(--animation-duration) var(--animation-easing);
+    animation-delay: 0.3s; /* starts fourth */
+    animation-fill-mode: both;
+}
+
+/* appear animation for save promt */
+.save-this-dataset.anim {
+    animation: flashBorder2 2s ease-in-out;
+    animation-delay: 1.2s; /* starts last */
+    animation-fill-mode: both;
 }

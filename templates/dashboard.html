@@ -14,15 +14,15 @@
         </div>
 
         {% if session.get('user_id') and session.get('show-save-request-form') %}
-        <div class="save-this-dataset">
+        <div class="save-this-dataset anim">
             <form method="POST" id="saveDatasetForm">
-                <p>Would you like to save this dataset to My Datasets?
+                <p>Would you like to save this dataset your saved datasets?
                     <button type="submit" name="save_dataset" value="yes" style="margin: 5px;">Yes</button>
                     <button type="submit" name="save_dataset" value="no" style="margin: 5px;">No</button>
                 </p>
             </form>
         </div>
-        {% endif %} 
+        {% endif %}  
 
         <!-- html table of data uploaded -->
         <div class="scrollable-container">
@@ -56,7 +56,7 @@
     </div>
     
     <!-- MAIN VISUAL SECTION -->
-    <div class="dashboard-section">
+    <div class="dashboard-section v">
         <!-- section title-->
         <div class="dashboard-section-title">
             <h2>Visual</h2>
@@ -74,7 +74,7 @@
     </div>
 
     <!-- DATA REPORT SECTION -->
-    <div class="dashboard-section">
+    <div class="dashboard-section dr">
          <!-- section title-->
          <div class="dashboard-section-title">
             <h2>Data Report</h2>
@@ -87,9 +87,11 @@
                 <h3>File Name</h3>
                 {{ file_name }}<br><br>
 
-                <h3>File Data</h3>
+                <h3>Data Shape</h3>
                 <p>Column Num: {{data_report['col num']}}</p>
-                <p>row Num: {{data_report['row num']}}</p>
+                <p>row Num: {{data_report['row num']}}</p><br>
+
+                <h3>Data Types</h3>
                 {{col_data_html|safe}}<br><br>
                 
                 <!-- Column Names: {{ col_names }}<br>
@@ -102,7 +104,7 @@
     </div>
 
     <!-- OTHER VISUALS SECTION -->
-    <div class="dashboard-section">
+    <div class="dashboard-section ov">
 
         <!-- section title -->
         <div class="dashboard-section-title">
@@ -110,16 +112,18 @@
         </div>
 
         <!-- other visuals select section -->
-        <div class="dashboard-section-visual-select">
-            {% if encoded_visuals %}
-                {% for altvisual in encoded_visuals %}
-                    <button class="visual-button" data-visual="{{ altvisual }}">
-                        <img src="{{ altvisual }}" alt="Visual">
-                    </button>
-                {% endfor %}
-            {% else %}
-                <p>No visuals generated yet</p>
-            {% endif %}
+        <div class="scrollable-container">
+            <div class="dashboard-section-visual-select">
+                {% if encoded_visuals %}
+                    {% for altvisual in encoded_visuals %}
+                        <div class="visual-button" data-visual="{{ altvisual }}">
+                            <img src="{{ altvisual }}" alt="Visual">
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No visuals generated yet</p>
+                {% endif %}
+            </div>
         </div>
 
     </div>
