@@ -6,3 +6,13 @@
     align-items: center;
     height: 80vh; 
 }
+
+/* basic styling for login and register page anchor nav */
+.login-register-page-nav {
+    color: #4fa3f7;
+    text-decoration: none;
+}
+
+.login-register-page-nav:hover {
+    color: #1e3a8a;
+}

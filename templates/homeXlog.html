@@ -12,19 +12,21 @@
 </head>
 
 <body>
-    <div class="home-banner"> 
-        <!-- main title -->
-        <h1 class="homepage-title">Visualizze</h1>
+    <div class="home-banner">
+        <div class="home-banner-items"> 
+            <!-- main title -->
+            <h1 class="homepage-title">Visualizze</h1>
 
-        <!-- navigation-->
-        <div class="btn-layout">
-            <a class="btn" href="{{ url_for('login') }}">Login</a>
-            <a class="btn" href="{{ url_for('register') }}">Register</a>
-        </div>
-        <div class="btn-layout">
-            <form method="POST" action="{{ url_for('continue_without_account') }}">
-                <button type="submit" class="btn">Continue without an account</button>
-            </form>
+            <!-- navigation-->
+            <div class="btn-layout">
+                <a class="btn" href="{{ url_for('login') }}">Login</a>
+                <a class="btn" href="{{ url_for('register') }}">Register</a>
+            </div>
+            <div class="btn-layout">
+                <form method="POST" action="{{ url_for('continue_without_account') }}">
+                    <button type="submit" class="btn">Continue without an account</button>
+                </form>
+            </div>
         </div>
     </div>
 

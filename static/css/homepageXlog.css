@@ -10,6 +10,31 @@
     font-family: Helvetica, Arial, Helvetica, sans-serif;
 }
 
+body {
+    /* resetting margin default */
+    margin: 0;
+
+    /* prevent horizontal scrolling */
+    overflow-x: hidden; 
+
+    /* flexing */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    /* sizing */
+    height: 100vh;
+    background-color: var(--website-background-color);
+}
+
+a {
+    /* removes underline from anchors */
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+}
+
 /* keyframe animations */
 @keyframes HomepageAnimation {
     /* 
@@ -36,51 +61,56 @@
     */
 }
 
-body {
-    /* resetting margin default */
-    margin: 0;
-
-    /* prevent horizontal scrolling */
-    overflow-x: hidden; 
-
-    /* flexing */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    /* sizing */
-    height: 100vh;
-    background-color: var(--website-background-color);
+@keyframes scrollImage {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
-a {
-    /* removes underline from anchors */
-    text-decoration: none;
-    color: white;
-    font-size: 20px;
+.scrolling-image {
+    position: absolute;
+    width: 200%; /* Set this based on the image's width */
+    height: 100vh;
+    background: url("../img/homeXlog_background_loop.png") no-repeat;
+    animation: scrollImage 10s linear infinite;
 }
 
 .home-banner {
-
     /* block positioning */
-    position: relative; /* relative positioning needed for ::before element*/
+    position: relative; /* relative positioning needed for ::before element */
     width: 100%;
+    height: 100vh;
     max-width: 100vw;
+    z-index: 0;
 
-
+    /* content display */
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: center;
+}
+.home-banner-items {
     /* content display */
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    /* block appearence */
+    /* block appearance */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     padding: 100px;
 
-    /* ensure child elemnts stay above */
+    /* ensure child elements stay above */
     z-index: 1;
+
+    /* background color and transparent border as per previous request */
+    background-color: #1c1c1c;
+    border: 5px solid rgba(28, 28, 28, 0.5); /* Transparent border with 50% opacity */
+    border-radius: 15px; /* Curved corners */
+    padding: 20px; /* Adjust padding */
 }
 
 /* 
@@ -196,3 +226,4 @@ button.btn {
     /* default a position */
     transform: translateY(0);
 }
+
