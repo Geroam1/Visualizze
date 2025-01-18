@@ -3,7 +3,7 @@
     position: fixed;
 
     /* overlaping priority */
-    z-index: 1;
+    z-index: 9;
 
     /* sizing */
     top: 45px; /* below the header */
