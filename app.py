@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 import os
 import io
 import base64
-import threading
 from io import BytesIO
 import pandas as pd
 import uuid
@@ -40,7 +39,7 @@ db = Database("./DataBase/visualizze.db")
 # start background process to clear data_set database periodically
 def clean_data_base():
     db.clear_data_sets()
-hour, minute = 0, 0 # 24 hour clock, time when the database will be cleaned. 0,0 -> midnight
+hour, minute = 0, 0 # 24 hour clock, time when the temp database table will be cleaned. 0,0 -> midnight
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=clean_data_base, trigger='cron', hour=hour, minute=minute)
 scheduler.start()
