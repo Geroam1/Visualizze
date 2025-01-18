@@ -338,7 +338,7 @@ def dashboard():
         # general data to send
         file_name=file_name,
         data_report = data_report,
-        allow_saving = allow_saving,
+        allow_saving = allow_saving if session.get('user_id') else False,
 
         # visual data to send
         visual=img_base64 if (request.method == 'POST' and recommended_visual_name) else None,

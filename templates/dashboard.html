@@ -24,7 +24,7 @@
         </div>
         {% endif %}
 
-        {% if not allow_saving %}
+        {% if not allow_saving and session.get('user_id') %}
         <!-- inform the user if save limit has been reached -->
         <div>
             <p>You have reached your limit for saving datasets. You may delete saved datasets <a class="login-register-page-nav" href="{{ url_for('history') }}">here</a>.</p>
