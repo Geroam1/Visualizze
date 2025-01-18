@@ -99,17 +99,13 @@ a {
     align-items: center;
 
     /* block appearance */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
     padding: 100px;
 
     /* ensure child elements stay above */
     z-index: 1;
 
     /* background color and transparent border as per previous request */
-    background-color: #1c1c1c;
-    border: 5px solid rgba(28, 28, 28, 0.5); /* Transparent border with 50% opacity */
-    border-radius: 15px; /* Curved corners */
+
     padding: 20px; /* Adjust padding */
 }
 
@@ -226,4 +222,3 @@ button.btn {
     /* default a position */
     transform: translateY(0);
 }
-
