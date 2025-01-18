@@ -56,7 +56,8 @@ class Database:
                 user_id,
                 data_set BLOB NOT NULL,
                 file_name TEXT NOT NULL,
-                server_storage_bytes INTEGER NOT NULL,
+                file_type TEXT NOT NULL,
+                file_size_bytes INTEGER NOT NULL,
                 user_max_server_storage_bytes INTEGER NOT NULL,
                 saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 
@@ -172,20 +173,72 @@ class Database:
     """
     users_data_sets table functions
     """ 
-    def save_user_data_set(self, user_id, data_set, file_name, server_storage_bytes, user_max_server_storage_bytes):
+    def save_user_data_set(self, user_id, data_set, file_name, file_type, file_size, user_max_server_storage_bytes):
         with self.get_connection() as conn:
             try:
                 # add new dataset to data_sets table
                 cursor = conn.cursor()
                 cursor.execute("""
-                    INSERT INTO users_data_sets (user_id, data_set, file_name, server_storage_bytes, user_max_server_storage_bytes, saved_at)
-                    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                """, (user_id, data_set, file_name, server_storage_bytes, user_max_server_storage_bytes))
+                    INSERT INTO users_data_sets (user_id, data_set, file_name, file_type, file_size_bytes, user_max_server_storage_bytes, saved_at)
+                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """, (user_id, data_set, file_name, file_type, file_size, user_max_server_storage_bytes))
                 conn.commit()
 
             except sqlite3.IntegrityError:
                 # Handle cases where the data might violate constraints (e.g., duplicate user_id or file_name)
                 print(f"Error: Failed to save the dataset for user ID {user_id} and file '{file_name}'.")
+
+    def get_saved_user_dataset_data_by_id(self, saved_data_set_id):
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    SELECT user_id, file_name, file_type, data_set, file_size_bytes
+                    FROM users_data_sets
+                    WHERE saved_data_set_id = ?
+                ''', (saved_data_set_id,))
+                result = cursor.fetchone()
+
+                if result:
+                    return {
+                        'user_id': result[0],
+                        'file_name': result[1],
+                        'file_type': result[2],
+                        'data_set': result[3],  # binary data of the dataset file
+                        'file_size': result [4]
+                    }
+                else:
+                    return None
+
+        except Exception as e:
+            print(f"Error retrieving dataset: {str(e)}")
+            return None
+        
+    def delete_saved_user_dataset_by_id(self, saved_data_set_id):
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    DELETE FROM users_data_sets
+                    WHERE saved_data_set_id = ?
+                ''', (saved_data_set_id,))
+                
+                conn.commit()  # Commit the transaction
+                print(f"Dataset with ID {saved_data_set_id} deleted (if it existed).")
+        
+        except Exception as e:
+            print(f"Error deleting dataset: {str(e)}")
+
+    def get_user_id_saved_datasets_counnt(self, user_id):
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT COUNT(*) FROM users_data_sets WHERE user_id = ?", (user_id,))
+                row_count = cursor.fetchone()[0] # first row will be the row count
+                return row_count
+        except Exception as e:
+            print(f"Error fetching row count for user_id {user_id}: {str(e)}")
+            return 0
 
     """
     generic database helper functions

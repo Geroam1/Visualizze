@@ -16,3 +16,25 @@
 .login-register-page-nav:hover {
     color: #1e3a8a;
 }
+
+.deleted-button {
+    background-color: red;
+}
+.deleted-button:hover {
+    background-color: darkred;
+}
+
+/* scrollable container for data table obtained from flask */
+.scrollable-container {
+
+    /* fill the container */
+    width: 100%;
+    height: 100%;
+
+    /* allow scrolling */
+    overflow: auto;
+
+    /* border */
+    box-sizing: border-box;
+    
+}

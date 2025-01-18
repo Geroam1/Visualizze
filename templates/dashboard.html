@@ -13,7 +13,7 @@
             <h2>Data</h2>
         </div>
 
-        {% if session.get('user_id') and session.get('show-save-request-form') %}
+        {% if session.get('user_id') and session.get('show-save-request-form') and allow_saving %}
         <div class="save-this-dataset anim">
             <form method="POST" id="saveDatasetForm">
                 <p>Would you like to save this dataset your saved datasets?
@@ -22,7 +22,16 @@
                 </p>
             </form>
         </div>
-        {% endif %}  
+        {% endif %}
+
+        {% if not allow_saving %}
+        <!-- inform the user if save limit has been reached -->
+        <div>
+            <p>You have reached your limit for saving datasets. You may delete saved datasets <a class="login-register-page-nav" href="{{ url_for('history') }}">here</a>.</p>
+            <button type="button" onclick="this.parentElement.style.display='none';" style="margin: 5px;">Hide</button>
+        </div>
+        {% endif %}
+        
 
         <!-- html table of data uploaded -->
         <div class="scrollable-container">

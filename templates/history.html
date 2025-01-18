@@ -8,28 +8,45 @@
 {% if message %}
     <p>{{ message }}</p>
 {% else %}
-    <table class="html-table" border="1">
+    <div class="scrollable-container">
+        <table class="html-table" border="1">
 
-        <!-- add table headers -->
-        <thead>
-            <tr>
-                {% for column in table_columns %}
-                    <th>{{ header_names[column] }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-
-        <!-- add table data from backend -->
-        <tbody>
-            {% for data_set in saved_data_set_rows %}
+            <!-- add table headers -->
+            <thead>
                 <tr>
                     {% for column in table_columns %}
-                        <td>{{ data_set[column] }}</td>
+                        <th>{{ header_names[column] }}</th>
                     {% endfor %}
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+
+            <!-- add table data from backend -->
+            <tbody>
+                {% for data_set in saved_data_set_rows %}
+                    <tr>
+                        {% for column in table_columns %}
+                            <td>{{ data_set[column] }}</td>
+                        {% endfor %}
+
+                        <!-- add a column that contains a button to send the data to the saved_data_set_id to the history route -->
+                        <!-- the history route will then set the dataset_id in the session -->
+                        <td>
+                            <form action="{{ url_for('history') }}" method="post">
+                                <input type="hidden" name="saved_data_set_id" value="{{ data_set['saved_data_set_id'] }}">
+                                <button type="submit">Send to visualizer</button>
+                            </form>
+                            <form action="{{ url_for('history') }}" method="post">
+                                <input type="hidden" name="saved_data_set_id" value="{{ data_set['saved_data_set_id'] }}">
+                                <input type="hidden" name="delete_dataset" value="true"> <!-- Added to identify delete action -->
+                                <button type="submit" class="deleted-button">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <div style="
         margin-top: 10px;
         font-weight: bold;

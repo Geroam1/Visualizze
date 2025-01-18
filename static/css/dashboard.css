@@ -72,21 +72,6 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* scrollable container for data table obtained from flask */
-.scrollable-container {
-
-    /* fill the container */
-    width: 100%;
-    height: 100%;
-
-    /* allow scrolling */
-    overflow: auto;
-
-    /* border */
-    box-sizing: border-box;
-    
-}
-
 /* html-table styles */
 .html-table {
     /* sizing compared to the parent container */

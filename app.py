@@ -174,13 +174,13 @@ def upload():
     uploaded_file.seek(0) # reset file pointer, so that later file reading does not output something empty
 
     # check file size
-    max_file_size = 100 * 2**20 # file_size is in Bytes, so 100 * 2**20 would represent 100 Megabytes
+    max_file_size = 2**20 / 2 # file_size is in Bytes, so 2**20 would represent 500 kb
 
     # add this to the session as the users max server storage size for later
     # maybe a feature can be added to increase this in some.. Financial way 
     session['user_max_server_storage'] = max_file_size
     if file_size > max_file_size:
-        error_message = "File size to large, max file size: 100 MB"
+        error_message = "File size to large, max file size: 500 kb"
         return render_template('visualize.html', error_message=error_message)
 
     # try to add data set to db
@@ -188,12 +188,11 @@ def upload():
         # reads file as binary
         data_set = uploaded_file.read()
 
-        # upload file data to db and record dataset id in session
+        # upload file data to temp db table and record dataset id in session
         session['dataset_id'] = db.add_data_set(user_id, filename, 'csv' if filename.endswith('.csv') else 'xlsx', file_size, data_set)
 
         # show save request form when rendering
-        session['show-save-request-form'] = True
-        
+        session['show-save-request-form'] = True        
 
     except Exception as e:
         return f"Error while saving to database: {str(e)}", 500
@@ -204,25 +203,39 @@ def upload():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    
+
     # ensure file was uploaded
     user_id = session.get('user_id') or session.get('user_id_private')
     if not user_id:
         error_message = "No user ID found"
         return render_template('error.html', error_message = error_message)
 
+    # if user is logged in
+    if session.get('user_id'):
+        saved_data_set_count = db.get_user_id_saved_datasets_counnt(user_id)
+
+        # check if user exceeded saved dataset count limit
+        max_dataset_save_count = 10
+        if saved_data_set_count >= max_dataset_save_count:
+            allow_saving = False
+        else:
+            allow_saving = True
+
     # get dataset from the database based on user_id
     try:
-        # read data entry in db
+        # get db entries from temp dataset table as a dictionary
         data_set_entry = db.get_data_set_by_id(session['dataset_id'])
+
         if not data_set_entry:
-            return "No file uploaded", 400
+            error_message = "No file uploaded"
+            return render_template('error.html', error_message = error_message)
 
         # seperate db data
         file_name = data_set_entry['file_name']
         file_type = data_set_entry['file_type']
         file_data = data_set_entry['data_set']
         file_size = data_set_entry['file_size']
+
 
         # read the binary data using pandas
         if file_type == 'xlsx':
@@ -239,7 +252,7 @@ def dashboard():
         return f"Error while retrieving file from the database: {str(e)}", 500
     
     # report data
-    file_name = session['file_name']
+    file_name = file_name
     data_report = get_data_report_data(data)
 
     # convert data(s) to html table for html table display
@@ -249,27 +262,27 @@ def dashboard():
     # handle POST request (form submission)
     x_col = y_col = z_col = None
     
-    if request.method == 'POST':
 
+    if request.method == 'POST':
         # Check for 'save_dataset' value
         save_dataset = request.form.get('save_dataset')
-        print(f"Save Dataset: {save_dataset}")  # Debug print
 
         if save_dataset == 'yes':
             # stop showing form
             session['show-save-request-form'] = False
             # save dataset to user_data_sets tab;e
-            print('Saving dataset to My Datasets...')
+            print('Saving dataset to saved datasets...')
             db.save_user_data_set(user_id=session['user_id'], 
                                   data_set=file_data, 
-                                  file_name=file_name, 
-                                  server_storage_bytes=file_size, 
+                                  file_name=file_name,
+                                  file_type=file_type, 
+                                  file_size=file_size, 
                                   user_max_server_storage_bytes=session['user_max_server_storage'])
-            print('Saved to My Datasets...')
+            print('Saved to saved datasets...')
         elif save_dataset == 'no':
             # stop showing form
             session['show-save-request-form'] = False
-            print('Not saving dataset to My Datasets...')
+            print('Not saving dataset to saved datasets...')
 
         # check selected columns
         if request.form.get('columnx'):
@@ -326,6 +339,7 @@ def dashboard():
         # general data to send
         file_name=file_name,
         data_report = data_report,
+        allow_saving = allow_saving,
 
         # visual data to send
         visual=img_base64 if (request.method == 'POST' and recommended_visual_name) else None,
@@ -355,19 +369,55 @@ def homeXlog():
     return render_template("homeXlog.html")
 
 
-@app.route("/history")
+@app.route("/history", methods=['GET', 'POST'])
 def history():
+
+    # check what button the user clicked
+    if request.method == 'POST':
+        # get the id of the saved dataset from form
+        saved_data_set_id = request.form.get('saved_data_set_id')
+
+        # if deleted button clicked
+        if request.form.get('delete_dataset') == 'true':
+            try:
+                # remove dataset by dataset_id from the table
+                db.delete_saved_user_dataset_by_id(saved_data_set_id)
+
+            except Exception as e:
+                # incase of a strange error
+                error_message = f"Error deleting dataset"
+                return render_template('error.html', error_message=error_message)
+
+        # if 'send to visualizer' button was clicked
+        else:
+
+            # get the data from the users_saved_datasets table
+            data_set_data = db.get_saved_user_dataset_data_by_id(saved_data_set_id)
+
+            # define data as variables
+            user_id = data_set_data['user_id']
+            file_name = data_set_data['file_name']
+            file_type = data_set_data['file_type']
+            file_size = data_set_data['file_size']
+            data_set = data_set_data['data_set']
+
+            # add the data set to the temporary dataset table and set the session dataset_id to its incremented id
+            session['dataset_id'] = db.add_data_set(user_id, file_name, file_type, file_size, data_set)
+
+            # redirect to dashboard, using the new dataset_id
+            return redirect(url_for('dashboard'))
+    
     with db.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_data_sets WHERE user_id=?", (session['user_id'],))
         
         # table column names from db
-        table_columns = ['file_name', 'server_storage_bytes', 'saved_at']
+        table_columns = ['file_name', 'file_size_bytes', 'saved_at']
         
         # Custom headers for the table
         header_names = {
             'file_name': 'File Name',
-            'server_storage_bytes': 'File Size (bytes)',
+            'file_size_bytes': 'File Size (bytes)',
             'saved_at': 'Saved At'
         }
         
@@ -375,7 +425,7 @@ def history():
         saved_data_set_rows = cursor.fetchall()
 
         # calculate sum of storage use
-        total_storage_used = sum(row['server_storage_bytes'] for row in saved_data_set_rows)
+        total_storage_used = sum(row['file_size_bytes'] for row in saved_data_set_rows)
 
     # if there are entries in the table pass it to the template, else pass an empty data table message
     if saved_data_set_rows:
@@ -385,7 +435,8 @@ def history():
                                table_columns=table_columns, 
                                header_names=header_names)
     else:
-        return render_template("history.html", message="No datasets saved yet.")
+        return render_template("history.html", message="No datasets saved.")
+
 
 
 
