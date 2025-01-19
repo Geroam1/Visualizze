@@ -48,14 +48,14 @@
         </div>
     </header>
 
-    <!-- Sliding menu, when menu button clicked -->
+    <!-- sliding menu, when menu button clicked -->
     <div id="menu" class="menu">
         <div class="nav-title">Navigation</div>
         <!-- menu content, using flask url_for to get route renders -->
         <a href="{{ url_for('visualize') }}">Visualizer</a>
 
         {% if session.get('user_id') %}
-        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('history') }}">Saved datasets</a>
         {% else %}
         <a href="{{ url_for('login') }}">History</a>
         {% endif %}
