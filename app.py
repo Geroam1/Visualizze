@@ -15,12 +15,11 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # personal functions
 from functions import (
-    generate_and_recommend_visuals, 
+    generate_and_recommend_WIP, 
     process_data, 
     get_data_report_data,
     )
 from apscheduler.schedulers.background import BackgroundScheduler
-from functions import generate_and_recommend_WIP
 
 """
 start up processes
@@ -295,7 +294,8 @@ def dashboard():
             if 'visualize' in request.form:
                 error_message = "Please select at least 1 column."
                 return render_template(
-                    'dashboard.html', 
+                    'dashboard.html',
+                    allow_saving = allow_saving if session.get('user_id') else False, 
                     error_message=error_message, 
                     data_report=data_report, 
                     table_html=table_html, 

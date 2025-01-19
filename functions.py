@@ -1,13 +1,10 @@
 import pandas as pd
 import matplotlib
-from flask import Flask
 # prevents GUI output from matlab, since it causes errors and isnt needed
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from functools import wraps
-from flask import session, flash, redirect, url_for
 
 
 def process_data(df):
@@ -63,105 +60,6 @@ def get_data_report_data(data):
     return data_report
 
 
-def generate_and_recommend_visuals(dataset, x_col, y_col, z_col=None):
-    """
-    Args:
-        dataset (pandas.DataFrame): Dataset to visualize.
-        x_col, y_col, z_col (str): Columns to visualize.
-
-    Returns:
-        visuals (dict): A dictionary with visual names as keys and figure objects as values.
-        recommended (str): The recommended visual's key in the visuals dictionary.
-    """
-    if x_col not in dataset.columns:
-        raise ValueError("x_col and y_col must be valid column names in the dataset.")
-    if z_col and z_col not in dataset.columns:
-        raise ValueError("z_col must be a valid column name in the dataset.")
-    
-    x = dataset[x_col] if x_col else None
-    y = dataset[y_col] if y_col else None
-    z = dataset[z_col] if z_col else None
-
-    x_type, y_type, z_type = x.dtype, y.dtype if z_col else None, dataset[z_col].dtype if z_col else None
-    visuals, recommendations = {}, []
-
-    def create_visual(plot_type, plot_func, **kwargs):
-        """Helper to create and store visuals with a customized dark theme."""
-        # Custom dark theme settings
-        plt.style.use("dark_background")  # Base dark background style
-        plt.rcParams.update({
-            "axes.facecolor": "#2B2B2B",  # Dark gray for plot background
-            "axes.edgecolor": "#5A5A5A",  # Light gray for axis edges
-            "axes.labelcolor": "white",   # White labels for better readability
-            "grid.color": "#444444",      # Medium gray for grid lines
-            "xtick.color": "lightgray",   # Light gray for x-tick labels
-            "ytick.color": "lightgray",   # Light gray for y-tick labels
-            "figure.facecolor": "#1E1E1E",  # Deep gray for figure background
-            "text.color": "white",        # White for all text
-            "legend.frameon": True,       # Enable legend frame
-            "legend.facecolor": "#2E2E2E",  # Dark gray for legend background
-            "legend.edgecolor": "#5A5A5A",  # Light gray for legend border
-        })
-
-        # Create the plot
-        plt.figure(figsize=(10, 6))
-        plot_func(**kwargs)
-        plt.title(plot_type.replace("_", " ").title(), fontsize=14, color="white", pad=15)  # Title with spacing
-        visuals[plot_type] = plt.gcf()
-        recommendations.append(plot_type)
-        plt.close()
-
-    
-    if pd.api.types.is_numeric_dtype(x_type) and pd.api.types.is_numeric_dtype(y_type):
-        create_visual("scatter_plot", sns.scatterplot, data=dataset, x=x_col, y=y_col)
-        if z_col and pd.api.types.is_numeric_dtype(z_type):
-            create_visual("scatter_with_color", plt.scatter, x=x, y=y, c=dataset[z_col], cmap='viridis', alpha=0.7)
-
-    if pd.api.types.is_datetime64_any_dtype(x_type):
-        create_visual("line_plot", sns.lineplot, data=dataset, x=x_col, y=y_col)
-
-    if pd.api.types.is_categorical_dtype(x_type) or x.nunique() < 20:
-        create_visual("bar_plot", sns.barplot, data=dataset, x=x_col, y=y_col)
-        create_visual("box_plot", sns.boxplot, data=dataset, x=x_col, y=y_col)
-
-    if pd.api.types.is_categorical_dtype(x_type) and y_col is None:
-        create_visual("count_plot", sns.countplot, data=dataset, x=x_col)
-
-    if pd.api.types.is_numeric_dtype(x_type) and pd.api.types.is_numeric_dtype(y_type):
-        create_visual("heatmap", sns.heatmap, data=dataset[[x_col, y_col]].corr(), annot=True, cmap='coolwarm')
-
-    if pd.api.types.is_numeric_dtype(x_type):
-        create_visual("histogram", sns.histplot, data=dataset, x=x_col, kde=True)
-
-    if pd.api.types.is_numeric_dtype(x_type) and pd.api.types.is_numeric_dtype(y_type) and z_col:
-        create_visual("bubble_chart", plt.scatter, x=x, y=y, s=dataset[z_col] * 50, alpha=0.7)
-
-    if pd.api.types.is_categorical_dtype(x_type):
-        create_visual("tree_map", sns.barplot, data=dataset, x=x_col, y=y_col)  # Tree maps would need a custom implementation in matplotlib
-
-    return visuals, recommendations[0] if recommendations else None
-
-
-def login_required(f):
-    """
-    login required decorater for later use
-    """
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            flash('You must be logged in to access this page.', 'error')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-
-
-
-
-
-
-
 def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
     """
     using the dataset and the column names, this function will generate every hard coded plot code for each situation,
@@ -193,9 +91,24 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
     visuals, recommendations = {}, []
 
     # helper sub functions
-    def create_visual(plot_type, plot_func, **kwargs):
-        """Helper to create and store visuals with a customized dark theme."""
-        # Custom dark theme settings
+    def create_visual(plot_title, plot_func, **kwargs):
+        """ 
+        plotting function to that will be run a lot, so it is used to simplify the code to just one line
+
+        Args:
+        plot_title -> str: The title of the plot
+
+        plot_func -> function: the plotting function this function will use
+
+        **kwargs -> dictionary of arguments: 
+        **kwargs allows me to input any number of arguments I want, these
+        arguments will the arguements for the plotting function. Since there are many different plotting functions
+        they dont all use the same args, some want x as a column name, some what x as a column itself, some plots
+        want unusal args. this allows me to just keep everything within this create visual function and simplify
+        the codes readability.
+        """
+
+        # styling for the visual, written by chatgpt to not waste time on python art
         plt.style.use("dark_background")  # Base dark background style
         plt.rcParams.update({
             "axes.facecolor": "#2B2B2B",  # Dark gray for plot background
@@ -211,23 +124,38 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             "legend.edgecolor": "#5A5A5A",  # Light gray for legend border
         })
 
-        # Create the plot
+        # initialize size of the plot
         plt.figure(figsize=(10, 6))
+
+        # run the plot function with its arguments
         plot_func(**kwargs)
 
-        # get column names for axis names
-        if 'x' in kwargs and isinstance(kwargs['x'], str):
-            plt.xlabel(kwargs['x'], fontsize=12, color='white')
-        if 'y' in kwargs and isinstance(kwargs['y'], str):
-            plt.ylabel(kwargs['y'], fontsize=12, color='white')
+        # set the columns names as the labels if applicable
+        if 'x' in kwargs:
+            # if kwargs has a col name as input
+            if isinstance(kwargs['x'], str):
+                plt.xlabel(kwargs['x'], fontsize=12, color='white')
 
-        # Title with spacing
-        plt.title(plot_type.replace("_", " ").title(), fontsize=14, color="white", pad=15)
+            # if kawrgs has the panda series column itself as input
+            elif isinstance(kwargs['x'], pd.Series) and kwargs['x'].name:
+                plt.xlabel(kwargs['x'].name, fontsize=12, color='white')
 
-        visuals[plot_type] = plt.gcf()
-        recommendations.append(plot_type)
+        if 'y' in kwargs:
+            if isinstance(kwargs['y'], str):
+                plt.ylabel(kwargs['y'], fontsize=12, color='white')
+            elif isinstance(kwargs['y'], pd.Series) and kwargs['y'].name:
+                plt.ylabel(kwargs['y'].name, fontsize=12, color='white')
+
+
+        # set the title with some styling
+        plt.title(plot_title.replace("_", " ").title(), fontsize=14, color="white", pad=15)
+
+        # add the created visual to the visuals dictionary to send to the route server
+        visuals[plot_title] = plt.gcf()
+        recommendations.append(plot_title) # append it to the recomendations list, the first plot in this list will be "recommended"
         plt.close()
 
+    # 1 dimension type checking functions
     def is_integer_column(col):
         return pd.api.types.is_integer_dtype(col)
     
@@ -291,58 +219,130 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
     1 dimensional cases
     """
     if (y_col == None) or (x_col == None) :
-        print("Attempting 1D plotting")
         """
         x_col or y_col is an interger
         """
-        # Histogram
+        # histogram
         if x_col and is_integer_column(x):
             create_visual(f"Histogram of {x_col}", sns.histplot, data=dataset, x=x_col)
         if y_col and is_integer_column(y):
             create_visual(f"Histogram of {y_col}", sns.histplot, data=dataset, x=y_col)
 
-        # Violin Plot
+        # violin Plot
         if x_col and is_integer_column(x):
             create_visual(f"Violin Plot of {x_col}", sns.violinplot, data=dataset, x=x_col)
         if y_col and is_integer_column(y):
             create_visual(f"Violin Plot of {y_col}", sns.violinplot, data=dataset, x=y_col)
 
-        # Count Plot (more suitable for categorical values, but can be applied to integers as well)
+        # count plot (more suitable for categorical values but can be applied to integers as well)
         if x_col and is_integer_column(x):
             create_visual(f"Count Plot of {x_col}", sns.countplot, data=dataset, x=x_col)
         if y_col and is_integer_column(y):
             create_visual(f"Count Plot of {y_col}", sns.countplot, data=dataset, x=y_col)
 
+        # box plot
+        if x_col and is_integer_column(x):
+            create_visual(f"Box Plot of {x_col}", sns.boxplot, data=dataset, x=x_col)
+        if y_col and is_integer_column(y):
+            create_visual(f"Box Plot of {y_col}", sns.boxplot, data=dataset, x=y_col)
+
+        # strip plot
+        if x_col and is_integer_column(x):
+            create_visual(f"Strip Plot of {x_col}", sns.stripplot, data=dataset, x=x_col)
+        if y_col and is_integer_column(y):
+            create_visual(f"Strip Plot of {y_col}", sns.stripplot, data=dataset, x=y_col)
+
+        # KDE (Kernel Density Estimator)
+        if x_col and is_integer_column(x):
+            create_visual(f"KDE Plot of {x_col}", sns.kdeplot, data=dataset, x=x_col)
+        if y_col and is_integer_column(y):
+            create_visual(f"KDE Plot of {y_col}", sns.kdeplot, data=dataset, x=y_col)
+
+        # rug plot
+        if x_col and is_integer_column(x):
+            create_visual(f"Rug Plot of {x_col}", sns.rugplot, data=dataset, x=x_col)
+        if y_col and is_integer_column(y):
+            create_visual(f"Rug Plot of {y_col}", sns.rugplot, data=dataset, x=y_col)
+
+        # swarm plot
+        if x_col and is_integer_column(x):
+            create_visual(f"Swarm Plot of {x_col}", sns.swarmplot, data=dataset, x=x_col)
+        if y_col and is_integer_column(y):
+            create_visual(f"Swarm Plot of {y_col}", sns.swarmplot, data=dataset, x=y_col)
+
+        # ECDF plot (Empirical Cumulative Distribution Function)
+        if x_col and is_integer_column(x):
+            create_visual(f"ECDF Plot of {x_col}", sns.ecdfplot, data=dataset, x=x_col)
+        if y_col and is_integer_column(y):
+            create_visual(f"ECDF Plot of {y_col}", sns.ecdfplot, data=dataset, x=y_col)
+
+
         """
         x_col or y_col is a string
         """
-        # Pie chart
+        # pie chart
         if x_col and is_string_column(x):
             create_visual(f"Pie Chart of {x_col}", plt.pie, x=x.value_counts(), labels = x.value_counts().index, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'}, textprops={'color': 'gray'})
         if y_col and is_string_column(y):
             create_visual(f"Pie Chart of {y_col}", plt.pie, x=y.value_counts(), labels = y.value_counts().index, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'}, textprops={'color': 'gray'})
         
-        # Countplot
+        # countplot
         if x_col and is_string_column(x):
             create_visual(f"Count Plot of {x_col}", sns.countplot, data=dataset, x=x_col)
         if y_col and is_string_column(y):
             create_visual(f"Count Plot of {y_col}", sns.countplot, data=dataset, x=y_col)
-        
+
+        # strip plot
+        if x_col and is_string_column(x):
+            create_visual(f"Strip Plot of {x_col}", sns.stripplot, data=dataset, x=x_col, y=dataset[x_col])
+        if y_col and is_string_column(y):
+            create_visual(f"Strip Plot of {y_col}", sns.stripplot, data=dataset, x=y_col, y=dataset[y_col])
+
+        # swarm plot
+        if x_col and is_string_column(x):
+            create_visual(f"Swarm Plot of {x_col}", sns.swarmplot, data=dataset, x=x_col, y=dataset[x_col])
+        if y_col and is_string_column(y):
+            create_visual(f"Swarm Plot of {y_col}", sns.swarmplot, data=dataset, x=y_col, y=dataset[y_col])
+
 
         """
         x_col or y_col is a float
         """
-        # Histogram
+        # histogram
         if x_col and is_float_column(x):
             create_visual(f"Histogram of {x_col}", sns.histplot, data=dataset, x=x_col)
         if y_col and is_integer_column(y):
             create_visual(f"Histogram of {y_col}", sns.histplot, data=dataset, x=y_col)
 
-        # Boxplot
+        # boxplot
         if x_col and is_float_column(x):
             create_visual(f"Boxplot of {x_col}", sns.boxplot, data=dataset, x=x_col)
         if y_col and is_integer_column(y):
             create_visual(f"Boxplot of {y_col}", sns.boxplot, data=dataset, x=y_col)
+
+        # violin plot
+        if x_col and is_float_column(x):
+            create_visual(f"Violin Plot of {x_col}", sns.violinplot, data=dataset, x=x_col)
+        if y_col and is_float_column(y):
+            create_visual(f"Violin Plot of {y_col}", sns.violinplot, data=dataset, x=y_col)
+
+        # KDE plot
+        if x_col and is_float_column(x):
+            create_visual(f"Density Plot of {x_col}", sns.kdeplot, data=dataset, x=x_col)
+        if y_col and is_float_column(y):
+            create_visual(f"KDE Plot of {y_col}", sns.kdeplot, data=dataset, x=y_col)
+
+        # barplot
+        if x_col and is_float_column(x):
+            create_visual(f"Bar Plot of {x_col} against the mean", sns.barplot, data=dataset, x=x_col, y=dataset[x_col].mean())
+        if y_col and is_float_column(y):
+            create_visual(f"Bar Plot of {y_col}", sns.barplot, data=dataset, x=y_col, y=dataset[y_col].mean())
+
+        # swarm plot
+        if x_col and is_float_column(x):
+            create_visual(f"Swarm Plot of {x_col}", sns.swarmplot, data=dataset, x=x_col)
+        if y_col and is_float_column(y):
+            create_visual(f"Swarm Plot of {y_col}", sns.swarmplot, data=dataset, x=y_col)
 
         """
         x_col or y_col is a bool
@@ -374,22 +374,42 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
         """
         if is_integer_column(x) and is_integer_column(y):
             # scatter plot
-            create_visual(f"Scatter plot of {x_col} against {y_col}", plot_func=plt.scatter, x=x, y=y)
+            create_visual(f"Scatter plot of {x_col} against {y_col}", plot_func=sns.scatterplot, data=dataset, x=x_col, y=y_col)
             # line plot
             create_visual(f"Line plot of {x_col} against {y_col}", plot_func=sns.lineplot, data=dataset, x=x, y=y)
             # bar plot
             create_visual(f"Bar plot of {x_col} against {y_col}", plot_func=sns.barplot, data=dataset, x=x, y=y)
+            # correlation matrix heatmap
+            correlation_matrix = dataset[[x_col, y_col]].corr()
+            create_visual(f"correlation matrix heatmap of {x_col} and {y_col}", sns.heatmap, data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+            # box plot
+            create_visual(f"Boxplot of {x_col} and {y_col}", sns.boxplot, data=dataset, x=x_col, y=y_col)
+            # violin plot
+            create_visual(f"Violin Plot of {x_col} and {y_col}", sns.violinplot, data=dataset, x=x_col, y=y_col)
+            # linear regression plot
+            create_visual(f"Linear Regression Plot of {x_col} and {y_col}", sns.regplot, data=dataset, x=x_col, y=y_col)
 
         """
         x_col and y_col is float
         """
         if is_float_column(x) and is_float_column(y):
             # scatter plot
-            create_visual(f"Scatter plot of {x_col} against {y_col}", plot_func=plt.scatter, x=x, y=y)
+            create_visual(f"Scatter plot of {x_col} against {y_col}", plot_func=sns.scatterplot, data=dataset, x=x_col, y=y_col)
             # hexbin plot
             create_visual(f"Hexbin plot of {x_col} against {y_col}", plot_func=plt.hexbin, x=x, y=y, gridsize=30, cmap='viridis')
             # KDE plot (kernal density estimator)
-            create_visual(f"KDE plot of {x_col} against {y_col}", plot_func=sns.kdeplo, x=x, y=y, cmap="Blues", fill=True, thresh=0, levels=100)
+            create_visual(f"KDE plot of {x_col} against {y_col}", plot_func=sns.kdeplot, x=x, y=y, cmap="Blues", fill=True, thresh=0, levels=100)
+            # correlation matrix heatmap
+            correlation_matrix = dataset[[x_col, y_col]].corr()
+            create_visual(f"Correlation Matrix Heatmap of {x_col} and {y_col}", sns.heatmap, data=correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+            # line plot
+            create_visual(f"Line Plot of {x_col} against {y_col}", plot_func=sns.lineplot, data=dataset, x=x_col, y=y_col)
+            # linear regression plot
+            create_visual(f"Linear Regression Plot of {x_col} and {y_col}", sns.regplot, data=dataset, x=x_col, y=y_col)
+            # violin plot
+            create_visual(f"Violin Plot of {x_col} and {y_col}", sns.violinplot, data=dataset, x=x_col, y=y_col)
+            # boxplot
+            create_visual(f"Boxplot of {x_col} and {y_col}", sns.boxplot, data=dataset, x=x_col, y=y_col)
 
         """
         x_col and y_col is string
@@ -399,25 +419,44 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             cross_tab = pd.crosstab(x, y)
             cross_tab.plot(kind='bar', stacked=True, colormap='viridis')
             create_visual(f"Stacked bar plot of {x_col} against {y_col}", plot_func=cross_tab.plot, kind='bar', stacked=True, colormap='viridis')
+            # hue count plot
+            create_visual(f"Count Plot of {x_col} with {y_col} as Hue", sns.countplot, data=dataset, x=x_col, hue=y_col)
+            # heatmap categorical correlation
+            cross_tab = pd.crosstab(x, y)
+            create_visual(f"Heatmap of Categorical Correlation between {x_col} and {y_col}", sns.heatmap, data=cross_tab, annot=True, cmap='Blues')
+            # swarm plot
+            create_visual(f"Swarm Plot of {x_col} and {y_col}", sns.swarmplot, data=dataset, x=x_col, y=y_col)
+            # stacked area plot
+            cross_tab = pd.crosstab(x, y)
+            create_visual(f"Stacked Area Plot of {x_col} against {y_col}", plot_func=cross_tab.plot, kind='area', stacked=True, colormap='viridis')
+            # categorical scatter plot
+            create_visual(f"Categorical Scatterplot of {x_col} and {y_col}", sns.stripplot, data=dataset, x=x_col, y=y_col, jitter=True)
 
         """
         x_col and y_col is bool
         """
         if is_bool_column(x) and is_bool_column(y):
-            # couldnt think or find any relevant plots for two booleans
+            # couldnt think of or find any relevant plots for two booleans
             pass
     
 
         """
-        x_col and y_col are int and str non-respectufully
+        x_col and y_col are int and str non-respectufully or float and str non respectfully
         """
-        if is_int_str(x, y):
+        if is_int_str(x, y) or is_str_float(x, y):
             # bar plot
             create_visual(f"Bar plot of {x_col} against {y_col}", plot_func=sns.barplot, data=dataset, x=x_col, y=y_col)
             # box plot
             create_visual(f"Box plot of {x_col} against {y_col}", plot_func=sns.boxplot, data=dataset, x=x_col, y=y_col)
             # violin plot
             create_visual(f"violin plot of {x_col} against {y_col}", plot_func=sns.violinplot, data=dataset, x=x_col, y=y_col)
+            # strip plot
+            create_visual(f"Strip Plot of {x_col} against {y_col}", sns.stripplot, data=dataset, x=x_col, y=y_col)
+            # swarm plot
+            create_visual(f"Swarm Plot of {x_col} against {y_col}", sns.swarmplot, data=dataset, x=x_col, y=y_col)
+            # line plot
+            create_visual(f"Line Plot of {x_col} against {y_col}", sns.lineplot, data=dataset, x=x_col, y=y_col)
+            
 
         """
         x_col and y_col are int and float non-respectufully
@@ -429,22 +468,21 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             create_visual(f"Hexbin plot of {x_col} against {y_col}", plot_func=plt.hexbin, x=x, y=y, gridsize=30, cmap='Blues')
             # regression plot
             create_visual(f"Regression plot of {x_col} against {y_col}", plot_func=sns.regplot, data=dataset, x=x_col, y=y_col, line_kws={'color': 'red'})
+            # line plot
+            create_visual(f"Line Plot of {x_col} against {y_col}", plot_func=sns.lineplot, data=dataset, x=x_col, y=y_col)
+            # heatmap
+            correlation = dataset[[x_col, y_col]].corr()
+            create_visual(f"Correlation Heatmap of {x_col} and {y_col}", plot_func=sns.heatmap, data=correlation, annot=True, cmap='coolwarm')
+            # violin plot
+            create_visual(f"Violin Plot of {x_col} against {y_col}", plot_func=sns.violinplot, data=dataset, x=x_col, y=y_col)
+            # boxplot
+            create_visual(f"Boxplot of {x_col} against {y_col}", plot_func=sns.boxplot, data=dataset, x=x_col, y=y_col)
+
 
         """
         x_col and y_col are int and bool non-respectufully
         """
         if is_int_bool(x, y):
-            # bar plot
-            create_visual(f"Bar plot of {x_col} against {y_col}", plot_func=sns.barplot, data=dataset, x=x_col, y=y_col)
-            # box plot
-            create_visual(f"Box plot of {x_col} against {y_col}", plot_func=sns.boxplot, data=dataset, x=x_col, y=y_col)
-            # violin plot
-            create_visual(f"violin plot of {x_col} against {y_col}", plot_func=sns.violinplot, data=dataset, x=x_col, y=y_col)
-
-        """
-        x_col and y_col are string and float non-respectufully
-        """
-        if is_str_float(x, y):
             # bar plot
             create_visual(f"Bar plot of {x_col} against {y_col}", plot_func=sns.barplot, data=dataset, x=x_col, y=y_col)
             # box plot
@@ -474,8 +512,5 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             create_visual(f"Box plot of {x_col} against {y_col}", plot_func=sns.boxplot, data=dataset, x=x_col, y=y_col)
             # violin plot
             create_visual(f"violin plot of {x_col} against {y_col}", plot_func=sns.violinplot, data=dataset, x=x_col, y=y_col)
-
-
-
         
     return visuals, recommendations[0] if recommendations else None
