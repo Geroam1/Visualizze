@@ -268,26 +268,22 @@ def dashboard():
         if save_dataset == 'yes':
             # stop showing form
             session['show-save-request-form'] = False
-            # save dataset to user_data_sets tab;e
-            print('Saving dataset to saved datasets...')
+            # save dataset to user_data_sets table
             db.save_user_data_set(user_id=session['user_id'], 
                                   data_set=file_data, 
                                   file_name=file_name,
                                   file_type=file_type, 
                                   file_size=file_size, 
                                   user_max_server_storage_bytes=session['user_max_server_storage'])
-            print('Saved to saved datasets...')
         elif save_dataset == 'no':
             # stop showing form
             session['show-save-request-form'] = False
-            print('Not saving dataset to saved datasets...')
 
         # check selected columns
         if request.form.get('columnx'):
             x_col = request.form.get('columnx')
         if request.form.get('columny'):
             y_col = request.form.get('columny')
-            print(y_col)
     
         # check columns were selected
         if x_col not in data.columns and y_col not in data.columns:
@@ -437,7 +433,9 @@ def history():
         return render_template("history.html", message="No datasets saved.")
 
 
-
+@app.route("/tutorial")
+def tutorial():
+    return render_template("tutorial.html")
 
 
 @app.route("/about")

@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block title %} Visualize About {% endblock %}
+
+{% block content %}
+<h1 class="home-title">Visualizze Step By Step Tutorial</h1>
+
+<br>
+
+<h2><span class="tutorialstepnumber">1</span> Go to visualizer</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial1.png') }}" alt="tutorial1"/>
+
+<br>
+
+<h2><span class="tutorialstepnumber">2</span> Upload your data file</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial2.png') }}" alt="tutorial2"/><br>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial3.png') }}" alt="tutorial3"/><br>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial4.png') }}" alt="tutorial4"/>
+
+<br>
+
+<h2><span class="tutorialstepnumber">2.1</span> Or login and upload from your saved datasets</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial2half1.png') }}" alt="tutorial2half1"/><br>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial2half2.png') }}" alt="tutorial2half2"/>
+
+<br>
+
+<h2><span class="tutorialstepnumber">3</span> Visualizer Dashboard</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial5.png') }}" alt="tutorial5"/>
+
+<br>
+
+<h2><span class="tutorialstepnumber">4</span> Select Columns To Visualize</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial6.png') }}" alt="tutorial6"/><br>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial5half1.png') }}" alt="tutorial6.1"/><br>
+
+<br>
+
+<h2><span class="tutorialstepnumber">5</span> Select Your Prefered Visual</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial7.png') }}" alt="tutorial7"/><br>
+
+<br>
+
+<h2><span class="tutorialstepnumber">6</span> Right Click and Download Your Chosen Visual</h2>
+<img class="tutorialimg" src="{{ url_for('static', filename='img/tutorial8.png') }}" alt="tutorial8"/><br>
+
+<br>
+
+<h2>Enjoy Your Visual!</h2>
+{% endblock %}

@@ -85,7 +85,6 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
     if x_col not in dataset.columns and y_col not in dataset.columns:
         return None, None
 
-    print(x_col)
     x = dataset[x_col] if x_col in dataset.columns else None
     y = dataset[y_col] if y_col in dataset.columns else None
     visuals, recommendations = {}, []
@@ -246,12 +245,6 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
         if y_col and is_integer_column(y):
             create_visual(f"Box Plot of {y_col}", sns.boxplot, data=dataset, x=y_col)
 
-        # strip plot
-        if x_col and is_integer_column(x):
-            create_visual(f"Strip Plot of {x_col}", sns.stripplot, data=dataset, x=x_col)
-        if y_col and is_integer_column(y):
-            create_visual(f"Strip Plot of {y_col}", sns.stripplot, data=dataset, x=y_col)
-
         # KDE (Kernel Density Estimator)
         if x_col and is_integer_column(x):
             create_visual(f"KDE Plot of {x_col}", sns.kdeplot, data=dataset, x=x_col)
@@ -263,12 +256,6 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             create_visual(f"Rug Plot of {x_col}", sns.rugplot, data=dataset, x=x_col)
         if y_col and is_integer_column(y):
             create_visual(f"Rug Plot of {y_col}", sns.rugplot, data=dataset, x=y_col)
-
-        # swarm plot
-        if x_col and is_integer_column(x):
-            create_visual(f"Swarm Plot of {x_col}", sns.swarmplot, data=dataset, x=x_col)
-        if y_col and is_integer_column(y):
-            create_visual(f"Swarm Plot of {y_col}", sns.swarmplot, data=dataset, x=y_col)
 
         # ECDF plot (Empirical Cumulative Distribution Function)
         if x_col and is_integer_column(x):
@@ -291,18 +278,6 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             create_visual(f"Count Plot of {x_col}", sns.countplot, data=dataset, x=x_col)
         if y_col and is_string_column(y):
             create_visual(f"Count Plot of {y_col}", sns.countplot, data=dataset, x=y_col)
-
-        # strip plot
-        if x_col and is_string_column(x):
-            create_visual(f"Strip Plot of {x_col}", sns.stripplot, data=dataset, x=x_col, y=dataset[x_col])
-        if y_col and is_string_column(y):
-            create_visual(f"Strip Plot of {y_col}", sns.stripplot, data=dataset, x=y_col, y=dataset[y_col])
-
-        # swarm plot
-        if x_col and is_string_column(x):
-            create_visual(f"Swarm Plot of {x_col}", sns.swarmplot, data=dataset, x=x_col, y=dataset[x_col])
-        if y_col and is_string_column(y):
-            create_visual(f"Swarm Plot of {y_col}", sns.swarmplot, data=dataset, x=y_col, y=dataset[y_col])
 
 
         """
@@ -337,12 +312,6 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             create_visual(f"Bar Plot of {x_col} against the mean", sns.barplot, data=dataset, x=x_col, y=dataset[x_col].mean())
         if y_col and is_float_column(y):
             create_visual(f"Bar Plot of {y_col}", sns.barplot, data=dataset, x=y_col, y=dataset[y_col].mean())
-
-        # swarm plot
-        if x_col and is_float_column(x):
-            create_visual(f"Swarm Plot of {x_col}", sns.swarmplot, data=dataset, x=x_col)
-        if y_col and is_float_column(y):
-            create_visual(f"Swarm Plot of {y_col}", sns.swarmplot, data=dataset, x=y_col)
 
         """
         x_col or y_col is a bool
@@ -424,13 +393,9 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             # heatmap categorical correlation
             cross_tab = pd.crosstab(x, y)
             create_visual(f"Heatmap of Categorical Correlation between {x_col} and {y_col}", sns.heatmap, data=cross_tab, annot=True, cmap='Blues')
-            # swarm plot
-            create_visual(f"Swarm Plot of {x_col} and {y_col}", sns.swarmplot, data=dataset, x=x_col, y=y_col)
             # stacked area plot
             cross_tab = pd.crosstab(x, y)
             create_visual(f"Stacked Area Plot of {x_col} against {y_col}", plot_func=cross_tab.plot, kind='area', stacked=True, colormap='viridis')
-            # categorical scatter plot
-            create_visual(f"Categorical Scatterplot of {x_col} and {y_col}", sns.stripplot, data=dataset, x=x_col, y=y_col, jitter=True)
 
         """
         x_col and y_col is bool
@@ -450,10 +415,6 @@ def generate_and_recommend_WIP(dataset, x_col=None, y_col=None):
             create_visual(f"Box plot of {x_col} against {y_col}", plot_func=sns.boxplot, data=dataset, x=x_col, y=y_col)
             # violin plot
             create_visual(f"violin plot of {x_col} against {y_col}", plot_func=sns.violinplot, data=dataset, x=x_col, y=y_col)
-            # strip plot
-            create_visual(f"Strip Plot of {x_col} against {y_col}", sns.stripplot, data=dataset, x=x_col, y=y_col)
-            # swarm plot
-            create_visual(f"Swarm Plot of {x_col} against {y_col}", sns.swarmplot, data=dataset, x=x_col, y=y_col)
             # line plot
             create_visual(f"Line Plot of {x_col} against {y_col}", sns.lineplot, data=dataset, x=x_col, y=y_col)
             
