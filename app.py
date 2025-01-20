@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, redirect, url_for, session # 
 from database import Database # my database class
 from werkzeug.security import check_password_hash, generate_password_hash # used to hash passwords for secure private password storing
 from werkzeug.utils import secure_filename # renames the file to something proper in the very rare case where it isnt already properly named
-from dotenv import load_dotenv # loads the .env (environment) variables, only used to to load the app secret key for extra server security
 import os # allows me to access personal files, currently just to get the secret key from key.env
 import io # used to create an 'in memory file' to help store the image in the db
 from io import BytesIO # user to convert from binary back to a normal file
@@ -26,7 +25,6 @@ start up processes
 app = Flask(__name__)
 
 # get the VISUALIZZE_SECRET_KEY from .env file for secure sessions
-load_dotenv('./files_to_ignore/.env') # load variables from .env file (defines VISUALIZZE_SECRET_KEY in python)
 app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
 # initialize visualizze's data base object
