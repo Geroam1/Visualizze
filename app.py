@@ -28,7 +28,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
 # initialize visualizze's data base object
-db = Database("./DataBase/visualizze.db")
+db = Database("./visualizze.db")
 
 # start background process to clear the data_set table periodically
 def clean_data_base():
