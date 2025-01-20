@@ -8,12 +8,14 @@
 
     <!-- DATA SECTION -->
     <div class="dashboard-section">
-        <!-- section title-->
+
+        <!-- SECTION TITLE -->
         <div class="dashboard-section-title">
             <h2>Data</h2>
         </div>
 
         {% if session.get('user_id') and session.get('show-save-request-form') and allow_saving %}
+        <!-- SAVE REQUEST FORM -->
         <div class="save-this-dataset anim">
             <form method="POST" id="saveDatasetForm">
                 <p>Would you like to save this dataset your saved datasets?
@@ -33,29 +35,34 @@
         {% endif %}
         
 
-        <!-- html table of data uploaded -->
+        <!-- HTML DATA TABLE -->
         <div class="scrollable-container">
             {{ table_html|safe }}
         </div>
 
-        <!-- drop down selectors for column selection -->
+        <!-- DROP DOWN COLUMN SELECTORS FORM -->
         <form action="/dashboard" method="POST" class="column-select-form">
             <div class="dashboard-section-dropdown">
                 <label for="columnx">Column X</label>
                 <select id="columnx" name="columnx">
                     <option value="" selected>col_x</option>
+                    <!-- CREATE OPTION FOR EACH COL IN DATASET -->
                     {% for col in data_report['col names'] %}
                         <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
+
                 <br><br>
+
                 <label for="columny">Column Y</label>
                 <select id="columny" name="columny">
                     <option value="" selected>col_y</option>
+                    <!-- CREATE OPTION FOR EACH COL IN DATASET -->
                     {% for col in data_report['col names'] %}
                         <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
+                
             </div>
             {% if error_message %}
                 <p style="color: red;">{{ error_message }}</p>
@@ -66,32 +73,36 @@
     
     <!-- MAIN VISUAL SECTION -->
     <div class="dashboard-section v">
-        <!-- section title-->
+        <!-- SECTION TITLE -->
         <div class="dashboard-section-title">
             <h2>Visual</h2>
         </div>
+
+        <!-- MAKES DIV SCROLLABLE -->
         <div class="scrollable-container">
 
-            <!-- main visual section -->
-            <!-- the class here is for js rather than css -->
+            <!-- the class here is for js to identify the div -->
             <div class="dashboard-main-visual">
+
+                <!-- IF THERE ARE ANY VISUALS PLOTTED -->
                 {% if visual %}
                     <img class="main-visual" src="data:image/png;base64,{{ visual }}" alt="No visual recommended"/>
                 {% else %}
                     <p>No visuals generated yet</p>
                 {% endif %}
+
             </div>
         </div>
     </div>
 
     <!-- DATA REPORT SECTION -->
     <div class="dashboard-section dr">
-         <!-- section title-->
+         <!-- SECTION TITLE -->
          <div class="dashboard-section-title">
             <h2>Data Report</h2>
         </div>
 
-        <!-- data report section -->
+        <!-- DATA REPORT SECTION -->
         <div class="dashboard-data-report">
             <div class="scrollable-container">
 
@@ -105,11 +116,6 @@
                 <h3>Data Types</h3>
                 {{col_data_html|safe}}<br><br>
                 
-                <!-- Column Names: {{ col_names }}<br>
-                Column Data Types: {{ data_types }}<br>
-                Column Number: {{ col_num }}<br>
-                Row Number: {{ row_num }}<br> -->
-                
             </div>
         </div>
     </div>
@@ -117,24 +123,27 @@
     <!-- OTHER VISUALS SECTION -->
     <div class="dashboard-section ov">
 
-        <!-- section title -->
+        <!-- SECTION TITLE -->
         <div class="dashboard-section-title">
             <h2>Other Visuals</h2>
         </div>
 
-        <!-- other visuals select section -->
+        <!-- OTHER VISUALS BUTTON GRID -->
         <div class="scrollable-container">
             <div class="dashboard-section-visual-select">
+
+                <!-- IF VISUALS LIST -->
                 {% if encoded_visuals %}
+                    <!-- CREATE A DIV FOR EACH VISUAL -->
                     {% for altvisual in encoded_visuals %}
                         <div class="visual-button" data-visual="{{ altvisual }}">
                             <img src="{{ altvisual }}" alt="Visual">
                         </div>
                     {% endfor %}
                 {% endif %}
+
             </div>
         </div>
-
     </div>
 </div>
 

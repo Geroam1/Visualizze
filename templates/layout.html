@@ -24,7 +24,7 @@
     <!-- header Section -->
     <header>
         <div class="left-header">
-            <!-- Menu button, runs toggleMenu when clicked -->
+            <!-- top left nav bar button, runs toggleMenu when clicked -->
             <div class="menu-icon" onclick="toggleMenu()">
                 <div class="line"></div>
                 <div class="line"></div>
@@ -55,7 +55,7 @@
         <a href="{{ url_for('visualize') }}">Visualizer</a>
 
         {% if session.get('user_id') %}
-        <a href="{{ url_for('history') }}">Saved datasets</a>
+        <a href="{{ url_for('history') }}">Saved Datasets</a>
         {% else %}
         <a href="{{ url_for('login') }}">History</a>
         {% endif %}
@@ -72,15 +72,11 @@
         
         {% endblock %}
     </main>
-
-    <!-- footer section -->
-    <!-- <footer>
-        <p>&copy; Omar Mansour</p>
-    </footer> -->
     
     <!-- script links to the js files in static -->
     <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
     <script src="{{ url_for('static', filename='js/drag-and-drop.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    
 </body>
 </html>

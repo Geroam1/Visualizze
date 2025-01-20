@@ -20,6 +20,7 @@
 <!-- file upload form -->
 <!-- enctype="multipart/form-data" is the browsers encoding type for files -->
 <form id="uploadForm" action="/visualize" method="POST" enctype="multipart/form-data">
+    <!-- file type input, limit to just csv or .xlsx -->
     <input type="file" id="fileInput" name="file" style="display: none;" accept=".csv,.xlsx" />
     <button type="submit" id="uploadButton">Upload</button>
 </form>

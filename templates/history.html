@@ -4,8 +4,9 @@
 
 {% block content %}
 <h1 class="home-title">Your Saved Data Sets</h1>
-    
+
 {% if message %}
+    <!-- if there are no saved datasets display the 'no datasets saved' message -->    
     <p>{{ message }}</p>
 {% else %}
     <div class="scrollable-container">
@@ -21,7 +22,7 @@
                 </tr>
             </thead>
 
-            <!-- add table data from backend -->
+            <!-- add table data -->
             <tbody>
                 {% for data_set in saved_data_set_rows %}
                     <tr>
@@ -33,12 +34,13 @@
                         <!-- the history route will then set the dataset_id in the session -->
                         <td>
                             <form action="{{ url_for('history') }}" method="post">
+                                <!-- value allows the history route access to the id of the dataset in this row -->
                                 <input type="hidden" name="saved_data_set_id" value="{{ data_set['saved_data_set_id'] }}">
                                 <button type="submit">Send to visualizer</button>
                             </form>
                             <form action="{{ url_for('history') }}" method="post">
-                                <input type="hidden" name="saved_data_set_id" value="{{ data_set['saved_data_set_id'] }}">
-                                <input type="hidden" name="delete_dataset" value="true"> <!-- Added to identify delete action -->
+                                <!-- value true tells the route to delete the dataset entry -->
+                                <input type="hidden" name="delete_dataset" value="true">
                                 <button type="submit" class="deleted-button">Delete</button>
                             </form>
                         </td>
@@ -46,11 +48,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-    <div style="
-        margin-top: 10px;
-        font-weight: bold;
-    ">
     </div>
     <p>
         &copy; Visualizze
