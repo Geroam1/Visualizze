@@ -40,6 +40,7 @@
                             </form>
                             <form action="{{ url_for('history') }}" method="post">
                                 <!-- value true tells the route to delete the dataset entry -->
+                                <input type="hidden" name="saved_data_set_id" value="{{ data_set['saved_data_set_id'] }}">
                                 <input type="hidden" name="delete_dataset" value="true">
                                 <button type="submit" class="deleted-button">Delete</button>
                             </form>
