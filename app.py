@@ -135,8 +135,8 @@ def logout():
     # clear session
     session.clear()
 
-    # redirect to login page
-    return redirect(url_for('login'))
+    # redirect to default page
+    return redirect(url_for('homeXlog'))
 
 
 
