@@ -25,8 +25,7 @@ start up processes
 app = Flask(__name__)
 
 # get the VISUALIZZE_SECRET_KEY from .env file for secure sessions
-# app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
-app.config['SECRET_KEY'] = 'd9e850b0a5aea4034945ffe3e897c88583ec644577a717be7df58706176529b5518aa6'
+app.config['SECRET_KEY'] = os.getenv('VISUALIZZE_SECRET_KEY')
 
 # initialize visualizze's data base object
 db = Database("./visualizze.db")
