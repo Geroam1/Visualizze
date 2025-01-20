@@ -1,5 +1,5 @@
 import sqlite3
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 
 
 class Database:
@@ -113,14 +113,15 @@ class Database:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT 1 FROM users WHERE username = ? LIMIT 1", (username,))
-            # Check if a row is fetched
+            # check if user row exists
             return cursor.fetchone() is not None 
 
     def authenticate_user(self, username, password):
         user = self.get_user(username)
         if user:
+            # if user password is correct
             if check_password_hash(user['password_hash'], password):
-                # return user data
+                # return user data to login
                 return user
         return None
 
@@ -141,7 +142,7 @@ class Database:
                 conn.commit()
                 return dataset_id
             except sqlite3.IntegrityError:
-                # Handle cases where the data might violate constraints (e.g., duplicate user_id or file_name)
+                # in case of a strange error
                 print(f"Error: Failed to add the dataset for user ID {user_id} and file '{file_name}'.")
     
 
@@ -185,7 +186,7 @@ class Database:
                 conn.commit()
 
             except sqlite3.IntegrityError:
-                # Handle cases where the data might violate constraints (e.g., duplicate user_id or file_name)
+                # incase of a strange error
                 print(f"Error: Failed to save the dataset for user ID {user_id} and file '{file_name}'.")
 
     def get_saved_user_dataset_data_by_id(self, saved_data_set_id):
@@ -223,8 +224,7 @@ class Database:
                     WHERE saved_data_set_id = ?
                 ''', (saved_data_set_id,))
                 
-                conn.commit()  # Commit the transaction
-                print(f"Dataset with ID {saved_data_set_id} deleted (if it existed).")
+                conn.commit()
         
         except Exception as e:
             print(f"Error deleting dataset: {str(e)}")
