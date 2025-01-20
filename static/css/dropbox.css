@@ -25,6 +25,7 @@
 }
 
 #dropbox.dragover {
+    /* color change when file is dragged to the box */
     border-color: #00f;
     background-color: #f0f8ff;
 }

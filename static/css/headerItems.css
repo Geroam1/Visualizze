@@ -1,5 +1,5 @@
 .left-header {
-    /* class for the div for the menu button and title in the header*/
+    /* styling from nav bar and website title section top left */
     display: flex;
     justify-content: left;
     align-items: center;

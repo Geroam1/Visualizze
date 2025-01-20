@@ -70,14 +70,6 @@ a {
     }
 }
 
-.scrolling-image {
-    position: absolute;
-    width: 200%; /* Set this based on the image's width */
-    height: 100vh;
-    background: url("../img/homeXlog_background_loop.png") no-repeat;
-    animation: scrollImage 10s linear infinite;
-}
-
 .home-banner {
     /* block positioning */
     position: relative; /* relative positioning needed for ::before element */
