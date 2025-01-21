@@ -1,3 +1,12 @@
+"""
+siteurl: https://visualizze-cz7m.onrender.com
+
+video url: https://youtu.be/15HIC1bpQ2A
+"""
+
+"""
+module imports
+"""
 from flask import Flask, request, render_template, redirect, url_for, session # flask tools
 from database import Database # my database class
 from werkzeug.security import check_password_hash, generate_password_hash # used to hash passwords for secure private password storing
@@ -47,7 +56,7 @@ routes
 # initial route
 @app.route("/")
 def layout():
-        return redirect(url_for("home"))
+    return redirect(url_for("home"))
 
 
 
